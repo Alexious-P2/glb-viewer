@@ -7,8 +7,18 @@
     body { margin: 0; }
     canvas { display: block; }
   </style>
+  <!-- Import Map -->
+  <script type="importmap">
+    {
+      "imports": {
+        "three": "https://cdn.jsdelivr.net/npm/three@0.160.1/build/three.module.js",
+        "three/examples/jsm/": "https://cdn.jsdelivr.net/npm/three@0.160.1/examples/jsm/"
+      }
+    }
+  </script>
 </head>
 <body>
+  <!-- Your Module Script -->
   <script type="module" src="main.js"></script>
 </body>
 </html>
