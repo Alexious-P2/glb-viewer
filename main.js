@@ -182,10 +182,11 @@ rgbeLoader.load(
 
 // Load GLB model
 const loader = new GLTFLoader();
-loader.load('model.glb', function (gltf) {
+loader.load('model.glb', (gltf) => {
+  console.log('Model loaded:', gltf);  // ✅ Check this logs something
   scene.add(gltf.scene);
-}, undefined, function (error) {
-  console.error(error);
+}, undefined, error => {
+  console.error('GLB Load Error:', error);
 });
 
 // Animation loop
