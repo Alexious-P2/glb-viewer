@@ -16,12 +16,46 @@ document.body.appendChild(renderer.domElement);
 const controls = new OrbitControls(camera, renderer.domElement);
 controls.enableDamping = true;
 
-const light = new THREE.DirectionalLight(0xffffff, 1);
-light.position.set(2, 5, 2);
-scene.add(light);
+// GUI setup (if not already)
+const gui = new GUI();
 
-const light = new THREE.AmbientLight(0xffffff, 0.5);
-scene.add(light);
+// Directional Light Setup
+const directionalLight = new THREE.DirectionalLight(0xffffff, 1);
+scene.add(directionalLight);
+const lightHelper = new THREE.DirectionalLightHelper(directionalLight, 0.5);
+scene.add(lightHelper);
+
+const lightParams = {
+  angle: 0,
+  radius: 5,
+  height: 2
+};
+
+const dirFolder = gui.addFolder('Directional Light Orbit');
+dirFolder.add(lightParams, 'angle', 0, 360).onChange(updateLightPosition);
+dirFolder.add(lightParams, 'radius', 1, 10).onChange(updateLightPosition);
+dirFolder.add(lightParams, 'height', -5, 10).onChange(updateLightPosition);
+dirFolder.open();
+
+function updateLightPosition() {
+  const rad = THREE.MathUtils.degToRad(lightParams.angle);
+  directionalLight.position.set(
+    Math.cos(rad) * lightParams.radius,
+    lightParams.height,
+    Math.sin(rad) * lightParams.radius
+  );
+  directionalLight.lookAt(0, 0, 0);
+  lightHelper.update();
+}
+updateLightPosition();
+
+// Ambient Light Setup
+const ambientLight = new THREE.AmbientLight(0xffffff, 0.5);
+scene.add(ambientLight);
+
+const ambientFolder = gui.addFolder('Ambient Light');
+ambientFolder.add(ambientLight, 'intensity', 0, 2, 0.01).name('Intensity');
+ambientFolder.open();
 
 const lightHelper = new THREE.DirectionalLightHelper(light, 0.5);
 scene.add(lightHelper);
