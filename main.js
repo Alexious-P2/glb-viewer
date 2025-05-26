@@ -3,25 +3,29 @@ import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
 import { GUI } from 'https://cdn.jsdelivr.net/npm/lil-gui@0.18/+esm';
 import { RGBELoader } from 'three/examples/jsm/loaders/RGBELoader.js';
-import { PMREMGenerator } from 'three';
 
+// Scene
 const scene = new THREE.Scene();
 scene.background = new THREE.Color(0x202020);
 
+// Camera
 const camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 0.1, 1000);
 camera.position.set(2, 2, 5);
 
+// Renderer
 const renderer = new THREE.WebGLRenderer({ antialias: true });
 renderer.setSize(window.innerWidth, window.innerHeight);
+renderer.outputEncoding = THREE.sRGBEncoding;
 document.body.appendChild(renderer.domElement);
 
+// Controls
 const controls = new OrbitControls(camera, renderer.domElement);
 controls.enableDamping = true;
 
-// GUI setup (if not already)
+// GUI
 const gui = new GUI();
 
-// Directional Light Setup
+// Directional Light
 const directionalLight = new THREE.DirectionalLight(0xffffff, 1);
 scene.add(directionalLight);
 const lightHelper = new THREE.DirectionalLightHelper(directionalLight, 0.5);
@@ -51,7 +55,7 @@ function updateLightPosition() {
 }
 updateLightPosition();
 
-// Ambient Light Setup
+// Ambient Light
 const ambientLight = new THREE.AmbientLight(0xffffff, 0.5);
 scene.add(ambientLight);
 
@@ -59,48 +63,62 @@ const ambientFolder = gui.addFolder('Ambient Light');
 ambientFolder.add(ambientLight, 'intensity', 0, 2, 0.01).name('Intensity');
 ambientFolder.open();
 
-// HDRI
-// PMREM Generator for HDRI
+// HDRI Setup
 const pmremGenerator = new THREE.PMREMGenerator(renderer);
 pmremGenerator.compileEquirectangularShader();
 
-let envMap;
+let envMap, skyboxMesh;
 const hdriRotation = { angle: 0 };
 
 const rgbeLoader = new RGBELoader();
 rgbeLoader.load(
   'https://dl.polyhaven.org/file/ph-assets/HDRIs/hdr/1k/studio_small_03_1k.hdr',
   (texture) => {
+    texture.mapping = THREE.EquirectangularReflectionMapping;
     envMap = pmremGenerator.fromEquirectangular(texture).texture;
-    texture.dispose();
+
+    // Apply environment map
     scene.environment = envMap;
-    scene.background = envMap;
+
+    // Create visible skybox
+    const skyGeo = new THREE.SphereGeometry(50, 64, 64);
+    const skyMat = new THREE.MeshBasicMaterial({
+      map: texture,
+      side: THREE.BackSide,
+      depthWrite: false
+    });
+    skyboxMesh = new THREE.Mesh(skyGeo, skyMat);
+    scene.add(skyboxMesh);
 
     updateHDRIRotation();
   }
 );
 
-// Function to rotate HDRI
+// HDRI Rotation
 function updateHDRIRotation() {
-  if (!envMap) return;
-  envMap.mapping = THREE.EquirectangularReflectionMapping;
-
-  const rotationMatrix = new THREE.Matrix4().makeRotationY(THREE.MathUtils.degToRad(hdriRotation.angle));
-  envMap.matrixAutoUpdate = false;
-  envMap.matrix.identity().multiply(rotationMatrix);
+  if (skyboxMesh) {
+    skyboxMesh.rotation.y = THREE.MathUtils.degToRad(hdriRotation.angle);
+  }
 }
 
-// Simple geometry to see effect
+const hdriFolder = gui.addFolder('HDRI Environment');
+hdriFolder.add(hdriRotation, 'angle', 0, 360).name('Rotation Y').onChange(updateHDRIRotation);
+hdriFolder.open();
+
+// Add a test sphere
 const geometry = new THREE.SphereGeometry(1, 64, 64);
 const material = new THREE.MeshStandardMaterial({ metalness: 1, roughness: 0 });
 const sphere = new THREE.Mesh(geometry, material);
 sphere.position.y = 1;
 scene.add(sphere);
 
-// HDRI GUI
-const hdriFolder = gui.addFolder('HDRI Environment');
-hdriFolder.add(hdriRotation, 'angle', 0, 360).name('Rotation Y').onChange(updateHDRIRotation);
-hdriFolder.open();
+// Load GLB model
+const loader = new GLTFLoader();
+loader.load('model.glb', function (gltf) {
+  scene.add(gltf.scene);
+}, undefined, function (error) {
+  console.error(error);
+});
 
 // Animation loop
 function animate() {
@@ -108,34 +126,11 @@ function animate() {
   controls.update();
   renderer.render(scene, camera);
 }
-
 animate();
 
-// Handle resizing
+// Responsive resizing
 window.addEventListener('resize', () => {
-  camera.aspect = window.innerWidth/window.innerHeight;
+  camera.aspect = window.innerWidth / window.innerHeight;
   camera.updateProjectionMatrix();
   renderer.setSize(window.innerWidth, window.innerHeight);
-});
-
-// GLB Load
-const loader = new GLTFLoader();
-loader.load('model.glb', function (gltf) {
-    scene.add(gltf.scene);
-}, undefined, function (error) {
-    console.error(error);
-});
-
-function animate() {
-    requestAnimationFrame(animate);
-    controls.update();
-    renderer.render(scene, camera);
-}
-
-animate();
-
-window.addEventListener('resize', () => {
-    camera.aspect = window.innerWidth / window.innerHeight;
-    camera.updateProjectionMatrix();
-    renderer.setSize(window.innerWidth, window.innerHeight);
 });
