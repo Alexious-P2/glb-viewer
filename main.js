@@ -98,8 +98,7 @@ const sphere = new THREE.Mesh(geometry, material);
 sphere.position.y = 1;
 scene.add(sphere);
 
-// GUI
-const gui = new GUI();
+// HDRI GUI
 const hdriFolder = gui.addFolder('HDRI Environment');
 hdriFolder.add(hdriRotation, 'angle', 0, 360).name('Rotation Y').onChange(updateHDRIRotation);
 hdriFolder.open();
