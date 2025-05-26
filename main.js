@@ -34,13 +34,17 @@ scene.add(lightHelper);
 const lightParams = {
   angle: 0,
   radius: 5,
-  height: 2
+  height: 2,
+  intensity: 1
 };
 
 const dirFolder = gui.addFolder('Directional Light Orbit');
 dirFolder.add(lightParams, 'angle', 0, 360).onChange(updateLightPosition);
 dirFolder.add(lightParams, 'radius', 1, 10).onChange(updateLightPosition);
 dirFolder.add(lightParams, 'height', -5, 10).onChange(updateLightPosition);
+dirFolder.add(lightParams, 'intensity', 0, 5, 0.01).name('Intensity').onChange(value => {
+  directionalLight.intensity = value;
+});
 dirFolder.open();
 
 function updateLightPosition() {
@@ -79,38 +83,9 @@ rgbeLoader.load(
 
     // Apply environment map
     scene.environment = envMap;
-
-    // Create visible skybox
-    const skyGeo = new THREE.SphereGeometry(50, 64, 64);
-    const skyMat = new THREE.MeshBasicMaterial({
-      map: texture,
-      side: THREE.BackSide,
-      depthWrite: false
-    });
-    skyboxMesh = new THREE.Mesh(skyGeo, skyMat);
-    scene.add(skyboxMesh);
-
-    updateHDRIRotation();
+	
   }
 );
-
-// HDRI Rotation
-function updateHDRIRotation() {
-  if (skyboxMesh) {
-    skyboxMesh.rotation.y = THREE.MathUtils.degToRad(hdriRotation.angle);
-  }
-}
-
-const hdriFolder = gui.addFolder('HDRI Environment');
-hdriFolder.add(hdriRotation, 'angle', 0, 360).name('Rotation Y').onChange(updateHDRIRotation);
-hdriFolder.open();
-
-// Add a test sphere
-const geometry = new THREE.SphereGeometry(1, 64, 64);
-const material = new THREE.MeshStandardMaterial({ metalness: 1, roughness: 0 });
-const sphere = new THREE.Mesh(geometry, material);
-sphere.position.y = 1;
-scene.add(sphere);
 
 // Load GLB model
 const loader = new GLTFLoader();
