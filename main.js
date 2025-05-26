@@ -20,6 +20,9 @@ const light = new THREE.DirectionalLight(0xffffff, 1);
 light.position.set(2, 5, 2);
 scene.add(light);
 
+const light = new THREE.AmbientLight(0xffffff, 0.5);
+scene.add(light);
+
 const lightHelper = new THREE.DirectionalLightHelper(light, 0.5);
 scene.add(lightHelper);
 
