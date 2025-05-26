@@ -5,7 +5,6 @@ import { GUI } from 'https://cdn.jsdelivr.net/npm/lil-gui@0.18/+esm';
 import { RGBELoader } from 'three/examples/jsm/loaders/RGBELoader.js';
 import { PMREMGenerator } from 'three';
 
-
 const scene = new THREE.Scene();
 scene.background = new THREE.Color(0x202020);
 
