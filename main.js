@@ -57,16 +57,6 @@ const ambientFolder = gui.addFolder('Ambient Light');
 ambientFolder.add(ambientLight, 'intensity', 0, 2, 0.01).name('Intensity');
 ambientFolder.open();
 
-const lightHelper = new THREE.DirectionalLightHelper(light, 0.5);
-scene.add(lightHelper);
-
-const gui = new GUI();
-const lightFolder = gui.addFolder('Directional Light');
-lightFolder.add(light.position, 'x', -10, 10);
-lightFolder.add(light.position, 'y', -10, 10);
-lightFolder.add(light.position, 'z', -10, 10);
-lightFolder.open();
-
 const loader = new GLTFLoader();
 loader.load('model.glb', function (gltf) {
     scene.add(gltf.scene);
