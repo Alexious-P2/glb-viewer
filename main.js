@@ -4,7 +4,6 @@ import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
 import { GUI } from 'https://cdn.jsdelivr.net/npm/lil-gui@0.18/+esm';
 import { RGBELoader } from 'three/examples/jsm/loaders/RGBELoader.js';
 import { PMREMGenerator } from 'three';
-import { GUI } from 'https://cdn.jsdelivr.net/npm/lil-gui@0.18/+esm';
 
 
 const scene = new THREE.Scene();
@@ -62,26 +61,29 @@ ambientFolder.add(ambientLight, 'intensity', 0, 2, 0.01).name('Intensity');
 ambientFolder.open();
 
 // HDRI
-const rgbeLoader = new RGBELoader();
+// PMREM Generator for HDRI
 const pmremGenerator = new THREE.PMREMGenerator(renderer);
 pmremGenerator.compileEquirectangularShader();
 
 let envMap;
-let hdriRotation = { angle: 0 };
+const hdriRotation = { angle: 0 };
 
-rgbeLoader.load('https://dl.polyhaven.org/file/ph-assets/HDRIs/hdr/1k/studio_small_03_1k.hdr', (texture) => {
-  envMap = pmremGenerator.fromEquirectangular(texture).texture;
-  texture.dispose();
-  scene.environment = envMap;
-  scene.background = envMap;
+const rgbeLoader = new RGBELoader();
+rgbeLoader.load(
+  'https://dl.polyhaven.org/file/ph-assets/HDRIs/hdr/1k/studio_small_03_1k.hdr',
+  (texture) => {
+    envMap = pmremGenerator.fromEquirectangular(texture).texture;
+    texture.dispose();
+    scene.environment = envMap;
+    scene.background = envMap;
 
-  updateHDRIRotation(); // Initial apply
-});
+    updateHDRIRotation();
+  }
+);
 
-// HDRI Rotate
+// Function to rotate HDRI
 function updateHDRIRotation() {
   if (!envMap) return;
-
   envMap.mapping = THREE.EquirectangularReflectionMapping;
 
   const rotationMatrix = new THREE.Matrix4().makeRotationY(THREE.MathUtils.degToRad(hdriRotation.angle));
@@ -89,12 +91,36 @@ function updateHDRIRotation() {
   envMap.matrix.identity().multiply(rotationMatrix);
 }
 
-// HDRI GUI
+// Simple geometry to see effect
+const geometry = new THREE.SphereGeometry(1, 64, 64);
+const material = new THREE.MeshStandardMaterial({ metalness: 1, roughness: 0 });
+const sphere = new THREE.Mesh(geometry, material);
+sphere.position.y = 1;
+scene.add(sphere);
+
+// GUI
+const gui = new GUI();
 const hdriFolder = gui.addFolder('HDRI Environment');
 hdriFolder.add(hdriRotation, 'angle', 0, 360).name('Rotation Y').onChange(updateHDRIRotation);
 hdriFolder.open();
 
+// Animation loop
+function animate() {
+  requestAnimationFrame(animate);
+  controls.update();
+  renderer.render(scene, camera);
+}
 
+animate();
+
+// Handle resizing
+window.addEventListener('resize', () => {
+  camera.aspect = window.innerWidth/window.innerHeight;
+  camera.updateProjectionMatrix();
+  renderer.setSize(window.innerWidth, window.innerHeight);
+});
+
+// GLB Load
 const loader = new GLTFLoader();
 loader.load('model.glb', function (gltf) {
     scene.add(gltf.scene);
