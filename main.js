@@ -2,6 +2,10 @@ import * as THREE from 'three';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
 import { GUI } from 'https://cdn.jsdelivr.net/npm/lil-gui@0.18/+esm';
+import { RGBELoader } from 'three/examples/jsm/loaders/RGBELoader.js';
+import { PMREMGenerator } from 'three';
+import { GUI } from 'https://cdn.jsdelivr.net/npm/lil-gui@0.18/+esm';
+
 
 const scene = new THREE.Scene();
 scene.background = new THREE.Color(0x202020);
@@ -56,6 +60,40 @@ scene.add(ambientLight);
 const ambientFolder = gui.addFolder('Ambient Light');
 ambientFolder.add(ambientLight, 'intensity', 0, 2, 0.01).name('Intensity');
 ambientFolder.open();
+
+// HDRI
+const rgbeLoader = new RGBELoader();
+const pmremGenerator = new THREE.PMREMGenerator(renderer);
+pmremGenerator.compileEquirectangularShader();
+
+let envMap;
+let hdriRotation = { angle: 0 };
+
+rgbeLoader.load('https://dl.polyhaven.org/file/ph-assets/HDRIs/hdr/1k/studio_small_03_1k.hdr', (texture) => {
+  envMap = pmremGenerator.fromEquirectangular(texture).texture;
+  texture.dispose();
+  scene.environment = envMap;
+  scene.background = envMap;
+
+  updateHDRIRotation(); // Initial apply
+});
+
+// HDRI Rotate
+function updateHDRIRotation() {
+  if (!envMap) return;
+
+  envMap.mapping = THREE.EquirectangularReflectionMapping;
+
+  const rotationMatrix = new THREE.Matrix4().makeRotationY(THREE.MathUtils.degToRad(hdriRotation.angle));
+  envMap.matrixAutoUpdate = false;
+  envMap.matrix.identity().multiply(rotationMatrix);
+}
+
+// HDRI GUI
+const hdriFolder = gui.addFolder('HDRI Environment');
+hdriFolder.add(hdriRotation, 'angle', 0, 360).name('Rotation Y').onChange(updateHDRIRotation);
+hdriFolder.open();
+
 
 const loader = new GLTFLoader();
 loader.load('model.glb', function (gltf) {
