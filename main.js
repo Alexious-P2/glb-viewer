@@ -106,8 +106,7 @@ loader.load('model.glb', (gltf) => {
   });
 
   scene.add(gltf.scene);
-},
-});
+}
 
 // Animation loop
 function animate() {
