@@ -14,6 +14,8 @@ camera.position.set(2, 2, 5);
 
 // Renderer
 const renderer = new THREE.WebGLRenderer({ antialias: true });
+renderer.shadowMap.enabled = true;
+renderer.shadowMap.type = THREE.PCFSoftShadowMap;
 renderer.setSize(window.innerWidth, window.innerHeight);
 renderer.outputEncoding = THREE.sRGBEncoding;
 document.body.appendChild(renderer.domElement);
@@ -35,14 +37,35 @@ const lightParams = {
 
 // Directional Light A
 const dirLightA = new THREE.DirectionalLight(0xffffff, lightParams.intensity);
-dirLightA.castShadow = false;
+dirLightA.castShadow = true;
+
+dirLightA.shadow.mapSize.width = 2048;
+dirLightA.shadow.mapSize.height = 2048;
+
+dirLightA.shadow.camera.near = 0.5;
+dirLightA.shadow.camera.far = 20;
+dirLightA.shadow.camera.left = -10;
+dirLightA.shadow.camera.right = 10;
+dirLightA.shadow.camera.top = 10;
+dirLightA.shadow.camera.bottom = -10;
 scene.add(dirLightA);
 const helperA = new THREE.DirectionalLightHelper(dirLightA, 0.3);
 scene.add(helperA);
 
 // Directional Light B (45° offset)
 const dirLightB = new THREE.DirectionalLight(0xe4f0ff, lightParams.intensity * 0.8);
-dirLightB.castShadow = false;
+dirLightB.castShadow = true;
+
+dirLightB.shadow.mapSize.width = 2048;
+dirLightB.shadow.mapSize.height = 2048;
+
+dirLightB.shadow.camera.near = 0.5;
+dirLightB.shadow.camera.far = 20;
+dirLightB.shadow.camera.left = -10;
+dirLightB.shadow.camera.right = 10;
+dirLightB.shadow.camera.top = 10;
+dirLightB.shadow.camera.bottom = -10;
+
 scene.add(dirLightB);
 const helperB = new THREE.DirectionalLightHelper(dirLightB, 0.3);
 scene.add(helperB);
@@ -80,6 +103,16 @@ scene.add(ambientLight);
 const ambientFolder = gui.addFolder('Ambient Light');
 ambientFolder.add(ambientLight, 'intensity', 0, 2, 0.01).name('Intensity');
 ambientFolder.open();
+
+// Ground Plane
+const groundGeo = new THREE.PlaneGeometry(20, 20);
+const groundMat = new THREE.ShadowMaterial({ opacity: 0.3 });
+
+const ground = new THREE.Mesh(groundGeo, groundMat);
+ground.rotation.x = -Math.PI / 2;
+ground.position.y = 0;
+ground.receiveShadow = true;
+scene.add(ground);
 
 // Load GLB model
 /*
