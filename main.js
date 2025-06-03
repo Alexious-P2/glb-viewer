@@ -54,7 +54,7 @@ scene.add(helperA);
 
 // Directional Light B (45° offset)
 const dirLightB = new THREE.DirectionalLight(0xe4f0ff, lightParams.intensity * 0.8);
-dirLightB.castShadow = true;
+dirLightB.castShadow = false;
 
 dirLightB.shadow.mapSize.width = 2048;
 dirLightB.shadow.mapSize.height = 2048;
