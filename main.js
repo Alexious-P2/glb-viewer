@@ -82,6 +82,12 @@ function updateLights() {
 
   dirLightA.intensity = lightParams.intensity;
   dirLightB.intensity = lightParams.intensity * 0.8;
+  
+  dirLightA.shadow.bias = lightParams.bias;
+  dirLightB.shadow.bias = lightParams.bias;
+
+  dirLightA.shadow.normalBias = lightParams.normalBias;
+  dirLightB.shadow.normalBias = lightParams.normalBias;
 
   dirLightA.lookAt(0, 0, 0);
   dirLightB.lookAt(0, 0, 0);
@@ -97,9 +103,8 @@ lightFolder.add(lightParams, 'angle', 0, 360).onChange(updateLights);
 lightFolder.add(lightParams, 'radius', 1, 10).onChange(updateLights);
 lightFolder.add(lightParams, 'height', -5, 10).onChange(updateLights);
 lightFolder.add(lightParams, 'intensity', 0, 5, 0.01).onChange(updateLights);
-// Shadow Bias Controls
-lightFolder.add(dirLightA.shadow, 'bias', -0.01, 0.01, 0.0001).name('Shadow Bias');
-lightFolder.add(dirLightA.shadow, 'normalBias', 0, 0.1, 0.001).name('Normal Bias');
+lightFolder.add(lightParams, 'bias', -0.01, 0.01, 0.0001).name('Shadow Bias').onChange(updateLights);
+lightFolder.add(lightParams, 'normalBias', 0, 0.1, 0.001).name('Normal Bias').onChange(updateLights);
 lightFolder.open();
 
 // Ambient Light
