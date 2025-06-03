@@ -49,7 +49,7 @@ dirLightA.shadow.camera.right = 5;
 dirLightA.shadow.camera.top = 5;
 dirLightA.shadow.camera.bottom = -5;
 dirLightA.shadow.bias = -0.00005;
-dirLightA.shadow.normalBias = 0.01;
+dirLightA.shadow.normalBias = 0.002;
 
 scene.add(dirLightA);
 const helperA = new THREE.DirectionalLightHelper(dirLightA, 0.3);
