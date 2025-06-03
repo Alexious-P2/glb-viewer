@@ -35,14 +35,14 @@ const lightParams = {
 
 // Directional Light A
 const dirLightA = new THREE.DirectionalLight(0xffffff, lightParams.intensity);
-dirLightA.castShadow = true;
+dirLightA.castShadow = false;
 scene.add(dirLightA);
 const helperA = new THREE.DirectionalLightHelper(dirLightA, 0.3);
 scene.add(helperA);
 
 // Directional Light B (45° offset)
 const dirLightB = new THREE.DirectionalLight(0xe4f0ff, lightParams.intensity * 0.8);
-dirLightB.castShadow = true;
+dirLightB.castShadow = false;
 scene.add(dirLightB);
 const helperB = new THREE.DirectionalLightHelper(dirLightB, 0.3);
 scene.add(helperB);
