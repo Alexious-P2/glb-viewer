@@ -42,12 +42,12 @@ dirLightA.castShadow = true;
 dirLightA.shadow.mapSize.width = 4096;
 dirLightA.shadow.mapSize.height = 4096;
 
-dirLightA.shadow.camera.near = 0.25;
-dirLightA.shadow.camera.far = 30;
-dirLightA.shadow.camera.left = -10;
-dirLightA.shadow.camera.right = 10;
-dirLightA.shadow.camera.top = 10;
-dirLightA.shadow.camera.bottom = -10;
+dirLightA.shadow.camera.near = 0.1;
+dirLightA.shadow.camera.far = 20;
+dirLightA.shadow.camera.left = -5;
+dirLightA.shadow.camera.right = 5;
+dirLightA.shadow.camera.top = 5;
+dirLightA.shadow.camera.bottom = -5;
 dirLightA.shadow.bias = -0.009; //.0005
 dirLightA.shadow.normalBias = 0.02; //.02
 
