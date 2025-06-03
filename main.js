@@ -39,15 +39,15 @@ const lightParams = {
 const dirLightA = new THREE.DirectionalLight(0xffffff, lightParams.intensity);
 dirLightA.castShadow = true;
 
-dirLightA.shadow.mapSize.width = 2048;
-dirLightA.shadow.mapSize.height = 2048;
+dirLightA.shadow.mapSize.width = 4096;
+dirLightA.shadow.mapSize.height = 4096;
 
-dirLightA.shadow.camera.near = 0.5;
+dirLightA.shadow.camera.near = 0.1;
 dirLightA.shadow.camera.far = 20;
-dirLightA.shadow.camera.left = -10;
-dirLightA.shadow.camera.right = 10;
-dirLightA.shadow.camera.top = 10;
-dirLightA.shadow.camera.bottom = -10;
+dirLightA.shadow.camera.left = -5;
+dirLightA.shadow.camera.right = 5;
+dirLightA.shadow.camera.top = 5;
+dirLightA.shadow.camera.bottom = -5;
 scene.add(dirLightA);
 const helperA = new THREE.DirectionalLightHelper(dirLightA, 0.3);
 scene.add(helperA);
