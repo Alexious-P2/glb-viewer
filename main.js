@@ -36,13 +36,25 @@ const lightParams = {
 // Directional Light A
 const dirLightA = new THREE.DirectionalLight(0xffffff, lightParams.intensity);
 dirLightA.castShadow = true;
+dirLight.shadow.mapSize.set(2048, 2048);
+dirLight.shadow.camera.left = -10;
+dirLight.shadow.camera.right = 10;
+dirLight.shadow.camera.top = 10;
+dirLight.shadow.camera.bottom = -10;
+scene.add(dirLight);
 scene.add(dirLightA);
 const helperA = new THREE.DirectionalLightHelper(dirLightA, 0.3);
 scene.add(helperA);
 
 // Directional Light B (45° offset)
 const dirLightB = new THREE.DirectionalLight(0xe4f0ff, lightParams.intensity * 0.8);
-dirLightB.castShadow = false;
+dirLightB.castShadow = true;
+dirLight.shadow.mapSize.set(2048, 2048);
+dirLight.shadow.camera.left = -10;
+dirLight.shadow.camera.right = 10;
+dirLight.shadow.camera.top = 10;
+dirLight.shadow.camera.bottom = -10;
+scene.add(dirLight);
 scene.add(dirLightB);
 const helperB = new THREE.DirectionalLightHelper(dirLightB, 0.3);
 scene.add(helperB);
@@ -80,6 +92,11 @@ scene.add(ambientLight);
 const ambientFolder = gui.addFolder('Ambient Light');
 ambientFolder.add(ambientLight, 'intensity', 0, 2, 0.01).name('Intensity');
 ambientFolder.open();
+
+//planeGround
+const ground = new THREE.Mesh(new THREE.PlaneGeometry(10, 10), new THREE.MeshStandardMaterial());
+ground.receiveShadow = true;
+scene.add(ground);
 
 // Load GLB model
 const loader = new GLTFLoader();
