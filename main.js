@@ -48,7 +48,7 @@ dirLightA.shadow.camera.left = -10;
 dirLightA.shadow.camera.right = 10;
 dirLightA.shadow.camera.top = 10;
 dirLightA.shadow.camera.bottom = -10;
-dirLightA.shadow.bias = -0.00025; //.0005
+dirLightA.shadow.bias = -0.009; //.0005
 dirLightA.shadow.normalBias = 0.02; //.02
 
 scene.add(dirLightA);
@@ -108,7 +108,7 @@ ambientFolder.open();
 
 // Ground Plane
 const groundGeo = new THREE.PlaneGeometry(20, 20);
-const groundMat = new THREE.ShadowMaterial({ opacity: 0.3, roughness: 0.6, metalness: 0.1 });
+const groundMat = new THREE.ShadowMaterial({ opacity: 0.3, roughness: 0.1, metalness: 0.1 });
 
 const ground = new THREE.Mesh(groundGeo, groundMat);
 ground.rotation.x = -Math.PI / 2;
