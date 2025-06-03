@@ -25,39 +25,53 @@ controls.enableDamping = true;
 // GUI
 const gui = new GUI();
 
-// Directional Light
-const directionalLight = new THREE.DirectionalLight(0xffffff, 1);
-scene.add(directionalLight);
-const lightHelper = new THREE.DirectionalLightHelper(directionalLight, 0.5);
-scene.add(lightHelper);
-
+// Lights
 const lightParams = {
-  angle: 0,
+  angle: 90,
   radius: 5,
   height: 2,
   intensity: 1
 };
 
-const dirFolder = gui.addFolder('Directional Light Orbit');
-dirFolder.add(lightParams, 'angle', 0, 360).onChange(updateLightPosition);
-dirFolder.add(lightParams, 'radius', 1, 10).onChange(updateLightPosition);
-dirFolder.add(lightParams, 'height', -5, 10).onChange(updateLightPosition);
-dirFolder.add(lightParams, 'intensity', 0, 5, 0.01).name('Intensity').onChange(value => {
-  directionalLight.intensity = value;
-});
-dirFolder.open();
+// Directional Light A
+const dirLightA = new THREE.DirectionalLight(0xffffff, lightParams.intensity);
+dirLightA.castShadow = true;
+scene.add(dirLightA);
+const helperA = new THREE.DirectionalLightHelper(dirLightA, 0.3);
+scene.add(helperA);
 
-function updateLightPosition() {
-  const rad = THREE.MathUtils.degToRad(lightParams.angle);
-  directionalLight.position.set(
-    Math.cos(rad) * lightParams.radius,
-    lightParams.height,
-    Math.sin(rad) * lightParams.radius
-  );
-  directionalLight.lookAt(0, 0, 0);
-  lightHelper.update();
+// Directional Light B (45° offset)
+const dirLightB = new THREE.DirectionalLight(0xffaa00, lightParams.intensity * 0.8);
+dirLightB.castShadow = false;
+scene.add(dirLightB);
+const helperB = new THREE.DirectionalLightHelper(dirLightB, 0.3);
+scene.add(helperB);
+
+function updateLights() {
+  const radA = THREE.MathUtils.degToRad(lightParams.angle);
+  const radB = THREE.MathUtils.degToRad(lightParams.angle + 45);
+
+  dirLightA.position.set(Math.cos(radA) * lightParams.radius, lightParams.height, Math.sin(radA) * lightParams.radius);
+  dirLightB.position.set(Math.cos(radB) * lightParams.radius, lightParams.height, Math.sin(radB) * lightParams.radius);
+
+  dirLightA.intensity = lightParams.intensity;
+  dirLightB.intensity = lightParams.intensity * 0.8;
+
+  dirLightA.lookAt(0, 0, 0);
+  dirLightB.lookAt(0, 0, 0);
+
+  helperA.update();
+  helperB.update();
 }
-updateLightPosition();
+updateLights();
+
+// GUI Controls
+const lightFolder = gui.addFolder('Dual Directional Light');
+lightFolder.add(lightParams, 'angle', 0, 360).onChange(updateLights);
+lightFolder.add(lightParams, 'radius', 1, 10).onChange(updateLights);
+lightFolder.add(lightParams, 'height', -5, 10).onChange(updateLights);
+lightFolder.add(lightParams, 'intensity', 0, 5, 0.01).onChange(updateLights);
+lightFolder.open();
 
 // Ambient Light
 const ambientLight = new THREE.AmbientLight(0xffffff, 0.5);
