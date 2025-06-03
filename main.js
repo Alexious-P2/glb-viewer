@@ -85,6 +85,10 @@ ambientFolder.open();
 const loader = new GLTFLoader();
 loader.load('model.glb', (gltf) => {
   console.log('Model loaded:', gltf);  // ✅ Check this logs something
+  gltf.scene.traverse((node) => {
+    if (node.isMesh) {
+      node.castShadow = true;
+      node.receiveShadow = true;
   scene.add(gltf.scene);
 }, undefined, error => {
   console.error('GLB Load Error:', error);
