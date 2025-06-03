@@ -106,7 +106,9 @@ loader.load('model.glb', (gltf) => {
   });
 
   scene.add(gltf.scene);
-}
+}, undefined, (error) => {
+  console.error('GLB Load Error:', error);
+});
 
 // Animation loop
 function animate() {
