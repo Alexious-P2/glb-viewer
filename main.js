@@ -59,8 +59,8 @@ scene.add(helperA);
 const dirLightB = new THREE.DirectionalLight(0xe4f0ff, lightParams.intensity * 0.8);
 dirLightB.castShadow = false;
 
-dirLightB.shadow.mapSize.width = 2048;
-dirLightB.shadow.mapSize.height = 2048;
+dirLightB.shadow.mapSize.width = 4096;
+dirLightB.shadow.mapSize.height = 4096;
 
 dirLightB.shadow.camera.near = 0.5;
 dirLightB.shadow.camera.far = 20;
