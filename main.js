@@ -92,7 +92,7 @@ loader.load('model.glb', (gltf) => {
 });
 */
 
-// Load GLB model
+// Load GLB model with shadow
 const loader = new GLTFLoader();
 loader.load('model.glb', (gltf) => {
   console.log('Model loaded:', gltf);  // ✅ Check this logs something
@@ -106,8 +106,7 @@ loader.load('model.glb', (gltf) => {
   });
 
   scene.add(gltf.scene);
-}, undefined, error => {
-  console.error('GLB Load Error:', error);
+},
 });
 
 // Animation loop
