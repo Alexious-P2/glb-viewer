@@ -3,7 +3,6 @@ import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
 import { GUI } from 'https://cdn.jsdelivr.net/npm/lil-gui@0.18/+esm';
 import { RGBELoader } from 'three/examples/jsm/loaders/RGBELoader.js';
-import { MeshReflectorMaterial } from 'three/examples/jsm/objects/MeshReflectorMaterial.js'; //reflection
 
 // Scene
 const scene = new THREE.Scene();
@@ -15,8 +14,6 @@ camera.position.set(2, 2, 5);
 
 // Renderer
 const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: false });
-renderer.setClearColor(0x000000, 0); // color, alpha=0 for full transparency
-renderer.setPixelRatio(window.devicePixelRatio);
 renderer.shadowMap.enabled = true; // to add shadow
 renderer.shadowMap.type = THREE.PCFSoftShadowMap; // to add shadow type
 renderer.setSize(window.innerWidth, window.innerHeight);
@@ -108,26 +105,16 @@ const ambientFolder = gui.addFolder('Ambient Light');
 ambientFolder.add(ambientLight, 'intensity', 0, 2, 0.01).name('Intensity');
 ambientFolder.open();
 
-// Reflective transparent ground
-const groundGeo = new THREE.PlaneGeometry(10, 10);
-const groundMat = new MeshReflectorMaterial({
-  color: 0x000000,
-  transparent: true,
-  opacity: 0.2,           // Adjust how visible the shadow-catching ground is
-  roughness: 1,
-  metalness: 0,
-  resolution: 256,        // Lower to reduce reflection processing
-  blur: [0, 0],           // No blur = no visible reflection
-  mixBlur: 0,             // Turn off reflection mixing
-  mixStrength: 0,         // Zero out reflection strength
-  depthScale: 0,
-  minDepthThreshold: 1,
-  maxDepthThreshold: 1
+// Ground plane (receives shadow)
+const groundGeo = new THREE.PlaneGeometry(20, 20);
+const groundMat = new THREE.MeshStandardMaterial({
+  color: 0x333333,
+  roughness: 0.8,
+  metalness: 0.1
 });
-
 const ground = new THREE.Mesh(groundGeo, groundMat);
 ground.rotation.x = -Math.PI / 2;
-ground.position.y = 0;
+ground.position.y = -0.01; // Slightly below origin
 ground.receiveShadow = true;
 scene.add(ground);
 
