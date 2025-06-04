@@ -13,7 +13,9 @@ const camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerH
 camera.position.set(2, 2, 5);
 
 // Renderer
-const renderer = new THREE.WebGLRenderer({ antialias: true });
+const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+renderer.setClearColor(0x000000, 0); // color, alpha=0 for full transparency
+renderer.setPixelRatio(window.devicePixelRatio);
 renderer.shadowMap.enabled = true;
 renderer.shadowMap.type = THREE.PCFSoftShadowMap;
 renderer.setSize(window.innerWidth, window.innerHeight);
@@ -48,7 +50,6 @@ dirLightA.shadow.camera.left = -5;
 dirLightA.shadow.camera.right = 5;
 dirLightA.shadow.camera.top = 5;
 dirLightA.shadow.camera.bottom = -5;
-dirLightA.shadow.bias = -0.05; //-.0005
 dirLightA.shadow.normalBias = 0.02; //.02
 
 scene.add(dirLightA);
@@ -106,9 +107,22 @@ const ambientFolder = gui.addFolder('Ambient Light');
 ambientFolder.add(ambientLight, 'intensity', 0, 2, 0.01).name('Intensity');
 ambientFolder.open();
 
-// Ground Plane
-const groundGeo = new THREE.PlaneGeometry(20, 20);
-const groundMat = new THREE.ShadowMaterial({ opacity: 0.3, roughness: 0.1, metalness: 0.1 });
+// Reflective transparent ground
+const groundGeo = new THREE.PlaneGeometry(10, 10);
+const groundMat = new MeshReflectorMaterial({
+  color: 0x000000,
+  transparent: true,
+  opacity: 0.2,           // Adjust how visible the shadow-catching ground is
+  roughness: 1,
+  metalness: 0,
+  resolution: 256,        // Lower to reduce reflection processing
+  blur: [0, 0],           // No blur = no visible reflection
+  mixBlur: 0,             // Turn off reflection mixing
+  mixStrength: 0,         // Zero out reflection strength
+  depthScale: 0,
+  minDepthThreshold: 1,
+  maxDepthThreshold: 1
+});
 
 const ground = new THREE.Mesh(groundGeo, groundMat);
 ground.rotation.x = -Math.PI / 2;
@@ -143,6 +157,18 @@ loader.load('model.glb', (gltf) => {
   scene.add(gltf.scene);
 }, undefined, (error) => {
   console.error('GLB Load Error:', error);
+});
+
+// Screenshot capture button logic
+document.getElementById("captureBtn").addEventListener("click", () => {
+  // Render a fresh frame if needed
+  renderer.render(scene, camera); // if you're not doing continuous render
+
+  // Capture as PNG with transparency
+  const link = document.createElement("a");
+  link.href = renderer.domElement.toDataURL("image/png");
+  link.download = "render-transparent.png";
+  link.click();
 });
 
 // Animation loop
