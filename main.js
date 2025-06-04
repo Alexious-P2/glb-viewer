@@ -14,13 +14,13 @@ const camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerH
 camera.position.set(2, 2, 5);
 
 // Renderer
-const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: false });
 renderer.setClearColor(0x000000, 0); // color, alpha=0 for full transparency
 renderer.setPixelRatio(window.devicePixelRatio);
-renderer.shadowMap.enabled = true;
-renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+renderer.shadowMap.enabled = true; // to add shadow
+renderer.shadowMap.type = THREE.PCFSoftShadowMap; // to add shadow type
 renderer.setSize(window.innerWidth, window.innerHeight);
-renderer.outputEncoding = THREE.sRGBEncoding;
+renderer.outputColorSpace = THREE.sRGBEncoding;
 document.body.appendChild(renderer.domElement);
 
 // Controls
