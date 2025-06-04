@@ -147,18 +147,6 @@ loader.load('model.glb', (gltf) => {
   console.error('GLB Load Error:', error);
 });
 
-// Screenshot capture button logic
-document.getElementById("captureBtn").addEventListener("click", () => {
-  // Render a fresh frame if needed
-  renderer.render(scene, camera); // if you're not doing continuous render
-
-  // Capture as PNG with transparency
-  const link = document.createElement("a");
-  link.href = renderer.domElement.toDataURL("image/png");
-  link.download = "render-transparent.png";
-  link.click();
-});
-
 // Animation loop
 function animate() {
   requestAnimationFrame(animate);
