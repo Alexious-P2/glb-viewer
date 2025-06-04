@@ -13,11 +13,11 @@ const camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerH
 camera.position.set(2, 2, 5);
 
 // Renderer
-const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: false });
-renderer.shadowMap.enabled = true; // to add shadow
-renderer.shadowMap.type = THREE.PCFSoftShadowMap; // to add shadow type
+const renderer = new THREE.WebGLRenderer({ antialias: true });
+renderer.shadowMap.enabled = true;
+renderer.shadowMap.type = THREE.PCFSoftShadowMap;
 renderer.setSize(window.innerWidth, window.innerHeight);
-renderer.outputColorSpace = THREE.sRGBEncoding;
+renderer.outputEncoding = THREE.sRGBEncoding;
 document.body.appendChild(renderer.domElement);
 
 // Controls
@@ -48,6 +48,7 @@ dirLightA.shadow.camera.left = -5;
 dirLightA.shadow.camera.right = 5;
 dirLightA.shadow.camera.top = 5;
 dirLightA.shadow.camera.bottom = -5;
+//dirLightA.shadow.bias = -0.05; //-.0005
 dirLightA.shadow.normalBias = 0.02; //.02
 
 scene.add(dirLightA);
@@ -105,16 +106,13 @@ const ambientFolder = gui.addFolder('Ambient Light');
 ambientFolder.add(ambientLight, 'intensity', 0, 2, 0.01).name('Intensity');
 ambientFolder.open();
 
-// Ground plane (receives shadow)
+// Ground Plane
 const groundGeo = new THREE.PlaneGeometry(20, 20);
-const groundMat = new THREE.MeshStandardMaterial({
-  color: 0x333333,
-  roughness: 0.8,
-  metalness: 0.1
-});
+const groundMat = new THREE.ShadowMaterial({ opacity: 0.3, roughness: 0.1, metalness: 0.1 });
+
 const ground = new THREE.Mesh(groundGeo, groundMat);
 ground.rotation.x = -Math.PI / 2;
-ground.position.y = -0.01; // Slightly below origin
+ground.position.y = 0;
 ground.receiveShadow = true;
 scene.add(ground);
 
