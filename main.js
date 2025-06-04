@@ -3,6 +3,7 @@ import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
 import { GUI } from 'https://cdn.jsdelivr.net/npm/lil-gui@0.18/+esm';
 import { RGBELoader } from 'three/examples/jsm/loaders/RGBELoader.js';
+import { MeshReflectorMaterial } from 'three/examples/jsm/objects/MeshReflectorMaterial.js'; //reflection
 
 // Scene
 const scene = new THREE.Scene();
