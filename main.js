@@ -5,7 +5,7 @@ import { GUI } from 'https://cdn.jsdelivr.net/npm/lil-gui@0.18/+esm';
 import { RGBELoader } from 'three/examples/jsm/loaders/RGBELoader.js';
 import { Reflector } from 'https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/objects/Reflector.js';
 //import { MeshReflectorMaterial } from 'https://cdn.jsdelivr.net/npm/three@0.160.1/examples/jsm/objects/MeshReflectorMaterial.js';
-import { EffectComposer, RenderPass, EffectPass, SSRPass} from 'https://cdn.jsdelivr.net/npm/postprocessing@latest/+esm';
+import { EffectComposer, RenderPass, EffectPass, SSRPass} from 'https://cdn.jsdelivr.net/npm/postprocessing@6.39.0/+esm';
 
 // Scene
 //const scene = new THREE.Scene();
@@ -255,7 +255,7 @@ function animate() {
   requestAnimationFrame(animate);
   controls.update();
   //renderer.render(scene, camera);
-  composer.render();
+  composer.render(); // for postprocessing
 }
 animate();
 
