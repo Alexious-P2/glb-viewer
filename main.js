@@ -4,6 +4,7 @@ import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
 import { GUI } from 'https://cdn.jsdelivr.net/npm/lil-gui@0.18/+esm';
 import { RGBELoader } from 'three/examples/jsm/loaders/RGBELoader.js';
 import { Reflector } from 'https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/objects/Reflector.js';
+/*import { MeshReflectorMaterial } from 'https://cdn.jsdelivr.net/gh/mrdoob/three.js@r152/examples/jsm/objects/MeshReflectorMaterial.js';*/
 
 // Scene
 const scene = new THREE.Scene();
@@ -128,6 +129,34 @@ const reflector = new Reflector(new THREE.PlaneGeometry(20, 20), {
 reflector.rotation.x = -Math.PI / 2;
 reflector.position.y = 0.001; // slightly above the ground
 scene.add(reflector);
+
+reflector.material.transparent = true; // Make reflector transparent
+reflector.material.opacity = 0.2; // ← adjust this for the desired blend of reflection vs background
+
+/*
+// Reflective ground plane
+const groundGeo = new THREE.PlaneGeometry(20, 20);
+const groundMat = new MeshReflectorMaterial({
+  color: 0x111111,
+  metalness: 0.8,
+  roughness: 0.3,
+  blur: [0.02, 0.02],
+  resolution: 512,
+  mixBlur: 0.5,
+  mixStrength: 1,
+  depthScale: 0.01,
+  minDepthThreshold: 0.8,
+  maxDepthThreshold: 1,
+  transparent: true,
+  opacity: 0.6,
+});
+
+const ground = new THREE.Mesh(groundGeo, groundMat);
+ground.rotation.x = -Math.PI / 2;
+ground.position.y = 0;
+ground.receiveShadow = true;
+scene.add(ground);
+*/
 
 // Load GLB model
 /*
