@@ -3,8 +3,8 @@ import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
 import { GUI } from 'https://cdn.jsdelivr.net/npm/lil-gui@0.18/+esm';
 import { RGBELoader } from 'three/examples/jsm/loaders/RGBELoader.js';
-import { Reflector } from 'https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/objects/Reflector.js';
-/*import { MeshReflectorMaterial } from 'https://cdn.jsdelivr.net/gh/mrdoob/three.js@r152/examples/jsm/objects/MeshReflectorMaterial.js';*/
+/*import { Reflector } from 'https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/objects/Reflector.js';*/
+import { MeshReflectorMaterial } from 'https://cdn.jsdelivr.net/gh/mrdoob/three.js@r152/examples/jsm/objects/MeshReflectorMaterial.js';
 
 // Scene
 const scene = new THREE.Scene();
@@ -108,6 +108,7 @@ const ambientFolder = gui.addFolder('Ambient Light');
 ambientFolder.add(ambientLight, 'intensity', 0, 2, 0.01).name('Intensity');
 ambientFolder.open();
 
+/*
 // Ground Plane
 const groundGeo = new THREE.PlaneGeometry(20, 20);
 const groundMat = new THREE.ShadowMaterial({ opacity: 0.3, roughness: 0.1, metalness: 0.1 });
@@ -117,7 +118,6 @@ ground.rotation.x = -Math.PI / 2;
 ground.position.y = 0;
 ground.receiveShadow = true;
 scene.add(ground);
-
 
 // Reflective Plane (slightly above ground to avoid z-fighting)
 const reflector = new Reflector(new THREE.PlaneGeometry(20, 20), {
@@ -132,8 +132,8 @@ scene.add(reflector);
 
 reflector.material.transparent = true; // Make reflector transparent
 reflector.material.opacity = 0.2; // ← adjust this for the desired blend of reflection vs background
+*/
 
-/*
 // Reflective ground plane
 const groundGeo = new THREE.PlaneGeometry(20, 20);
 const groundMat = new MeshReflectorMaterial({
@@ -156,7 +156,6 @@ ground.rotation.x = -Math.PI / 2;
 ground.position.y = 0;
 ground.receiveShadow = true;
 scene.add(ground);
-*/
 
 // Load GLB model
 /*
