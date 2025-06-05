@@ -7,8 +7,14 @@ import { Reflector } from 'https://cdn.jsdelivr.net/npm/three@0.160.0/examples/j
 /*import { MeshReflectorMaterial } from 'https://cdn.jsdelivr.net/npm/three@0.152.2/examples/jsm/objects/MeshReflectorMaterial.js';*/
 
 // Scene
+//const scene = new THREE.Scene();
+//scene.background = new THREE.Color(0x202020);
+const sceneParams = {
+  backgroundColor: '#202020',
+  enableReflector: true
+};
 const scene = new THREE.Scene();
-scene.background = new THREE.Color(0x202020);
+scene.background = new THREE.Color(sceneParams.backgroundColor);
 
 // Camera
 const camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 0.1, 1000);
@@ -45,13 +51,13 @@ dirLightA.shadow.mapSize.width = 4096;
 dirLightA.shadow.mapSize.height = 4096;
 
 dirLightA.shadow.camera.near = 0.1;
-dirLightA.shadow.camera.far = 20;
+dirLightA.shadow.camera.far = 10;
 dirLightA.shadow.camera.left = -5;
 dirLightA.shadow.camera.right = 5;
 dirLightA.shadow.camera.top = 5;
 dirLightA.shadow.camera.bottom = -5;
 //dirLightA.shadow.bias = -0.05; //-.0005
-dirLightA.shadow.normalBias = 0.002; //.02 default //.05 extending // .01 good // Or try 0.01 to reduce jagginess
+dirLightA.shadow.normalBias = 0.01; //.02 default //.05 extending // .01 good // Or try 0.01 to reduce jagginess
 
 scene.add(dirLightA);
 const helperA = new THREE.DirectionalLightHelper(dirLightA, 0.3);
@@ -59,17 +65,6 @@ scene.add(helperA);
 
 // Directional Light B (45° offset)
 const dirLightB = new THREE.DirectionalLight(0xe4f0ff, lightParams.intensity * 0.8);
-dirLightB.castShadow = false;
-
-dirLightB.shadow.mapSize.width = 4096;
-dirLightB.shadow.mapSize.height = 4096;
-
-dirLightB.shadow.camera.near = 0.5;
-dirLightB.shadow.camera.far = 20;
-dirLightB.shadow.camera.left = -10;
-dirLightB.shadow.camera.right = 10;
-dirLightB.shadow.camera.top = 10;
-dirLightB.shadow.camera.bottom = -10;
 
 scene.add(dirLightB);
 const helperB = new THREE.DirectionalLightHelper(dirLightB, 0.3);
@@ -120,7 +115,7 @@ ground.receiveShadow = true;
 scene.add(ground);
 
 // Reflective Plane (slightly above ground to avoid z-fighting)
-const reflector = new Reflector(new THREE.PlaneGeometry(20, 20), {
+const reflector = new Reflector(new THREE.PlaneGeometry(10, 10), {
   color: new THREE.Color(0x444444),
   textureWidth: window.innerWidth * window.devicePixelRatio,
   textureHeight: window.innerHeight * window.devicePixelRatio,
@@ -128,11 +123,11 @@ const reflector = new Reflector(new THREE.PlaneGeometry(20, 20), {
 });
 reflector.rotation.x = -Math.PI / 2;
 reflector.position.y = 0.001; // slightly above the ground
+reflector.material.transparent = true; // Make reflector transparent
+reflector.material.opacity = 0.05; // ← adjust this for the desired blend of reflection vs background
 scene.add(reflector);
 
-reflector.material.transparent = true; // Make reflector transparent
-reflector.material.opacity = 0.2; // ← adjust this for the desired blend of reflection vs background
-
+/*
 // Add GUI control
 const reflectorParams = {
   enabled: true
@@ -143,6 +138,17 @@ reflectorFolder.add(reflectorParams, 'enabled').name('Show Reflector').onChange(
   reflector.visible = value;
 });
 reflectorFolder.open();
+*/
+
+// Reflector toggle control
+const sceneFolder = gui.addFolder('Scene Settings');
+sceneFolder.addColor(sceneParams, 'backgroundColor').name('Background').onChange((value) => {
+  scene.background.set(value);
+});
+sceneFolder.add(sceneParams, 'enableReflector').name('Enable Reflector').onChange((enabled) => {
+  reflector.visible = enabled;
+});
+sceneFolder.open();
 
 /*
 // Reflective ground plane
