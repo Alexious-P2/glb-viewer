@@ -137,7 +137,7 @@ ambientFolder.open();
 
 // Ground Plane
 const groundGeo = new THREE.PlaneGeometry(20, 20);
-const groundMat = new THREE.ShadowMaterial({ opacity: 0.3, roughness: 0.1, metalness: 0.1 });
+const groundMat = new THREE.ShadowMaterial({ opacity: 0.3 });
 
 const ground = new THREE.Mesh(groundGeo, groundMat);
 ground.rotation.x = -Math.PI / 2;
