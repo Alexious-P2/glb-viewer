@@ -3,6 +3,7 @@ import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
 import { GUI } from 'https://cdn.jsdelivr.net/npm/lil-gui@0.18/+esm';
 import { RGBELoader } from 'three/examples/jsm/loaders/RGBELoader.js';
+import { MeshReflectorMaterial } from 'three/examples/jsm/objects/MeshReflectorMaterial.js';
 
 // Scene
 const scene = new THREE.Scene();
@@ -107,8 +108,32 @@ ambientFolder.add(ambientLight, 'intensity', 0, 2, 0.01).name('Intensity');
 ambientFolder.open();
 
 // Ground Plane
+/*
 const groundGeo = new THREE.PlaneGeometry(20, 20);
 const groundMat = new THREE.ShadowMaterial({ opacity: 0.3, roughness: 0.1, metalness: 0.1 });
+
+const ground = new THREE.Mesh(groundGeo, groundMat);
+ground.rotation.x = -Math.PI / 2;
+ground.position.y = 0;
+ground.receiveShadow = true;
+scene.add(ground);
+*/
+
+// Ground Plane with Mesh Reflector Material
+const groundGeo = new THREE.PlaneGeometry(20, 20);
+const groundMat = new MeshReflectorMaterial({
+  color: 0x222222,
+  roughness: 0.4,
+  metalness: 0.5,
+  resolution: 512,
+  blur: [1, 1],
+  mixBlur: 0.75,
+  mixStrength: 1.0,
+  depthScale: 0.01,
+  minDepthThreshold: 0.9,
+  maxDepthThreshold: 1,
+  reflectorOffset: 0.01
+});
 
 const ground = new THREE.Mesh(groundGeo, groundMat);
 ground.rotation.x = -Math.PI / 2;
