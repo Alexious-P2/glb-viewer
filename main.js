@@ -3,9 +3,9 @@ import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
 import { GUI } from 'https://cdn.jsdelivr.net/npm/lil-gui@0.18/+esm';
 import { RGBELoader } from 'three/examples/jsm/loaders/RGBELoader.js';
-import { Reflector } from 'https://cdn.jsdelivr.net/npm/three@0.160.1/examples/jsm/objects/Reflector.js';
+import { Reflector } from 'https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/objects/Reflector.js';
 //import { MeshReflectorMaterial } from 'https://cdn.jsdelivr.net/npm/three@0.160.1/examples/jsm/objects/MeshReflectorMaterial.js';
-//import { EffectComposer, RenderPass, EffectPass, SSRPass} from 'https://cdn.jsdelivr.net/npm/postprocessing@6.39.0/+esm';
+//import { EffectComposer, RenderPass, EffectPass, SSRPass} from 'https://cdn.jsdelivr.net/npm/postprocessing@6.30.2/+esm';
 
 // Scene
 //const scene = new THREE.Scene();
@@ -16,6 +16,33 @@ const sceneParams = {
 };
 const scene = new THREE.Scene();
 scene.background = new THREE.Color(sceneParams.backgroundColor);
+
+// Load HDRI for lighting and reflections
+const hdriPath = 'hdri/lightroom_14b.hdr'; // Make sure the file is in your GitHub repo
+const rgbeLoader = new RGBELoader();
+
+rgbeLoader.load(hdriPath, (hdrTexture) => {
+  hdrTexture.mapping = THREE.EquirectangularReflectionMapping;
+
+  // Use for lighting and reflections
+  scene.environment = hdrTexture;
+
+  // Do NOT set: scene.background = hdrTexture;
+  // This keeps your solid background color visible
+});
+
+const envSettings = {
+  intensity: 1
+};
+
+gui.add(envSettings, 'intensity', 0, 5, 0.1).name('HDRI Intensity').onChange(() => {
+  scene.traverse((child) => {
+    if (child.isMesh && child.material && child.material.envMapIntensity !== undefined) {
+      child.material.envMapIntensity = envSettings.intensity;
+      child.material.needsUpdate = true;
+    }
+  });
+});
 
 // Camera
 const camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 0.1, 1000);
@@ -36,34 +63,6 @@ controls.enableDamping = true;
 // GUI
 const gui = new GUI();
 
-// Load HDRI for lighting and reflections
-const hdriPath = 'hdri/lightroom_14b_low.hdr'; // Make sure the file is in your GitHub repo
-const rgbeLoader = new RGBELoader();
-
-rgbeLoader.load(hdriPath, (hdrTexture) => {
-  hdrTexture.mapping = THREE.EquirectangularReflectionMapping;
-
-  // Use for lighting and reflections
-  scene.environment = hdrTexture;
-
-  // Do NOT set: scene.background = hdrTexture;
-  // This keeps your solid background color visible
-});
-
-//HDR GUI
-const envSettings = {
-  intensity: 1
-};
-
-gui.add(envSettings, 'intensity', 0, 5, 0.1).name('HDRI Intensity').onChange(() => {
-  scene.traverse((child) => {
-    if (child.isMesh && child.material && child.material.envMapIntensity !== undefined) {
-      child.material.envMapIntensity = envSettings.intensity;
-      child.material.needsUpdate = true;
-    }
-  });
-});
-
 // Lights
 const lightParams = {
   angle: 90,
@@ -80,11 +79,11 @@ dirLightA.shadow.mapSize.width = 4096;
 dirLightA.shadow.mapSize.height = 4096;
 
 dirLightA.shadow.camera.near = 0.1;
-dirLightA.shadow.camera.far = 5; //10
-dirLightA.shadow.camera.left = -3; //-5
-dirLightA.shadow.camera.right = 3; //5
-dirLightA.shadow.camera.top = 3; //5
-dirLightA.shadow.camera.bottom = -3; //-5
+dirLightA.shadow.camera.far = 10;
+dirLightA.shadow.camera.left = -5;
+dirLightA.shadow.camera.right = 5;
+dirLightA.shadow.camera.top = 5;
+dirLightA.shadow.camera.bottom = -5;
 //dirLightA.shadow.bias = -0.05; //-.0005
 dirLightA.shadow.normalBias = 0.01; //.02 default //.05 extending // .01 good // Or try 0.01 to reduce jagginess
 
@@ -92,35 +91,33 @@ scene.add(dirLightA);
 const helperA = new THREE.DirectionalLightHelper(dirLightA, 0.3);
 scene.add(helperA);
 
-
 // Directional Light B (45° offset)
-//const dirLightB = new THREE.DirectionalLight(0xe4f0ff, lightParams.intensity * 0.8);
+const dirLightB = new THREE.DirectionalLight(0xe4f0ff, lightParams.intensity * 0.8);
 
-//scene.add(dirLightB);
-//const helperB = new THREE.DirectionalLightHelper(dirLightB, 0.3);
-//scene.add(helperB);
+scene.add(dirLightB);
+const helperB = new THREE.DirectionalLightHelper(dirLightB, 0.3);
+scene.add(helperB);
 
 function updateLights() {
   const radA = THREE.MathUtils.degToRad(lightParams.angle);
-  //const radB = THREE.MathUtils.degToRad(lightParams.angle + 45);
+  const radB = THREE.MathUtils.degToRad(lightParams.angle + 45);
 
   dirLightA.position.set(Math.cos(radA) * lightParams.radius, lightParams.height, Math.sin(radA) * lightParams.radius);
-  //dirLightB.position.set(Math.cos(radB) * lightParams.radius, lightParams.height, Math.sin(radB) * lightParams.radius);
+  dirLightB.position.set(Math.cos(radB) * lightParams.radius, lightParams.height, Math.sin(radB) * lightParams.radius);
 
   dirLightA.intensity = lightParams.intensity;
-  //dirLightB.intensity = lightParams.intensity * 0.8;
+  dirLightB.intensity = lightParams.intensity * 0.8;
 
   dirLightA.lookAt(0, 0, 0);
-  //dirLightB.lookAt(0, 0, 0);
+  dirLightB.lookAt(0, 0, 0);
 
   helperA.update();
-  //helperB.update();
+  helperB.update();
 }
 updateLights();
 
-
 // GUI Controls
-const lightFolder = gui.addFolder('Directional Light');
+const lightFolder = gui.addFolder('Dual Directional Light');
 lightFolder.add(lightParams, 'angle', 0, 360).onChange(updateLights);
 lightFolder.add(lightParams, 'radius', 1, 10).onChange(updateLights);
 lightFolder.add(lightParams, 'height', -5, 10).onChange(updateLights);
@@ -137,7 +134,7 @@ ambientFolder.open();
 
 // Ground Plane
 const groundGeo = new THREE.PlaneGeometry(20, 20);
-const groundMat = new THREE.ShadowMaterial({ opacity: 0.3 });
+const groundMat = new THREE.ShadowMaterial({ opacity: 0.3, roughness: 0.1, metalness: 0.1 });
 
 const ground = new THREE.Mesh(groundGeo, groundMat);
 ground.rotation.x = -Math.PI / 2;
@@ -235,29 +232,12 @@ loader.load('model.glb', (gltf) => {
   console.error('GLB Load Error:', error);
 });
 
-/*
-// 1. Set up EffectComposer
-const composer = new EffectComposer(renderer);
-composer.addPass(new RenderPass(scene, camera));
-
-// 2. Add SSR Pass
-const ssrPass = new SSRPass({
-  renderer,
-  scene,
-  camera,
-  width: window.innerWidth,
-  height: window.innerHeight,
-  selects: [reflectiveMesh], // only reflect selected objects
-});
-composer.addPass(ssrPass);
-*/
-
 // Animation loop
 function animate() {
   requestAnimationFrame(animate);
   controls.update();
   renderer.render(scene, camera);
-  //composer.render(); // for postprocessing
+  //composer.render();
 }
 animate();
 
