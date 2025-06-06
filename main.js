@@ -313,6 +313,15 @@ gui.add(ssrPass, 'opacity', 0, 1).step(0.01).name('SSR Opacity').onChange(() => 
   groundReflector.opacity = ssrPass.opacity;
 });
 
+// Initialize values if needed
+ssrPass.fresnel = ssrPass.fresnel ?? 1.0;  // example default
+groundReflector.fresnel = ssrPass.fresnel;
+
+// Add fresnel control to GUI with min, max, step for smooth control
+gui.add(ssrPass, 'fresnel', 0, 5).step(0.01).name('Fresnel').onChange(() => {
+  groundReflector.fresnel = ssrPass.fresnel;
+});
+
 
 // Animation loop
 function animate() {
