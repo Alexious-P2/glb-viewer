@@ -145,7 +145,7 @@ ground.position.y = 0;
 ground.receiveShadow = true;
 scene.add(ground);
 
-// Ground Plane GUI Setup
+// GUI Setup
 const groundFolder = gui.addFolder('Ground Shadow');
 
 const groundSettings = {
@@ -162,31 +162,6 @@ groundFolder.add(groundSettings, 'shadowOpacity', 0, 1).step(0.01).name('Shadow 
 });
 
 groundFolder.open();
-
-// Reflective ground plane
-const reflectiveMaterial = new THREE.MeshPhysicalMaterial({
-  color: 0xffffff,
-  metalness: 0.8,
-  roughness: 0.1,
-  transparent: true,
-  opacity: 0.3, // adjust for desired screen tint
-  transmission: 0.7, // adds glass-like appearance
-  clearcoat: 1.0,
-  clearcoatRoughness: 0.05,
-});
-
-const reflectivePlane = new THREE.Mesh(
-  new THREE.PlaneGeometry(20, 20), // Match screen size
-  reflectiveMaterial
-);
-
-// Position
-reflectivePlane.position.set(0, .001, 0);
-reflectivePlane.rotation.x = -Math.PI / 2;
-reflectivePlane.receiveShadow = false;
-reflectivePlane.castShadow = false;
-
-scene.add(reflectivePlane);
 
 /*
 // Default Reflective Plane (slightly above ground to avoid z-fighting)
