@@ -235,11 +235,10 @@ const ssrPass = new SSRPass({
   groundReflector: null,
   selects: null // You can specify reflective meshes if you want
 });
-  ssrPass.intensity = 0.3;  // Lower means less reflective
-  ssrPass.maxRoughness = 0.5; // Between 0 (perfectly smooth) and 1 (rough)
-  ssrPass.distance = 10; // default is often larger, lower = less reflective range
-  ssrPass.thickness = 0.05; // controls thickness used for intersection tests (usually 0.1 default)
-  ssrPass.fade = 0.1; //controls how reflections fade out at edges
+  ssrPass.SSR = 0.3;
+  ssrPass.metalness = 1;
+  ssrPass.depth = 2;
+  ssrPass.beauty = 3;
 composer.addPass(ssrPass);
 
 // Animation loop
