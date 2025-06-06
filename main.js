@@ -3,12 +3,13 @@ import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
 import { GUI } from 'https://cdn.jsdelivr.net/npm/lil-gui@0.18/+esm';
 import { RGBELoader } from 'three/examples/jsm/loaders/RGBELoader.js';
-//import { Reflector } from 'https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/objects/Reflector.js';
+import { Reflector } from 'https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/objects/Reflector.js';
+import { EffectComposer } from 'three/examples/jsm/postprocessing/EffectComposer.js';
+import { RenderPass } from 'three/examples/jsm/postprocessing/RenderPass.js';
+import { SSRPass } from 'https://cdn.jsdelivr.net/npm/three@0.160.1/examples/jsm/postprocessing/SSRPass.js';
+import { ShaderPass } from 'three/examples/jsm/postprocessing/ShaderPass.js';
 //import { MeshReflectorMaterial } from 'https://unpkg.com/three@0.155.0/examples/jsm/objects/MeshReflectorMaterial.js';
 //import { EffectComposer, RenderPass, EffectPass, SSRPass} from 'https://cdn.jsdelivr.net/npm/postprocessing@6.30.2/+esm';
-//import { SSRShader } from './libs/three/jsm/shaders/SSRShader.js';
-import { SSRPass } from 'SSRPass';
-
 
 // Scene
 //const scene = new THREE.Scene();
@@ -134,7 +135,6 @@ const ambientFolder = gui.addFolder('Ambient Light');
 ambientFolder.add(ambientLight, 'intensity', 0, 2, 0.01).name('Intensity');
 ambientFolder.open();
 
-/*
 // Ground Plane
 const groundGeo = new THREE.PlaneGeometry(20, 20);
 const groundMat = new THREE.ShadowMaterial({ opacity: 0.3, roughness: 0.1, metalness: 0.1 });
@@ -167,9 +167,9 @@ sceneFolder.add(sceneParams, 'enableReflector').name('Enable Reflector').onChang
   reflector.visible = enabled;
 });
 sceneFolder.open();
-*/
 
-// Reflective ground plane
+/*
+// Reflective ground plane MeshReflectorMaterial
 const groundGeo = new THREE.PlaneGeometry(20, 20);
 const groundMat = new MeshReflectorMaterial({
   color: 0x111111,
@@ -191,6 +191,7 @@ ground.rotation.x = -Math.PI / 2;
 ground.position.y = 0.001;
 ground.receiveShadow = true;
 scene.add(ground);
+*/
 
 // Load GLB model
 /*
@@ -221,29 +222,20 @@ loader.load('model.glb', (gltf) => {
   console.error('GLB Load Error:', error);
 });
 
-// SSR Setup
+// Postprocessing SSR
 const composer = new EffectComposer(renderer);
-const renderPass = new RenderPass(scene, camera);
-composer.addPass(renderPass);
+composer.addPass(new RenderPass(scene, camera));
 
 const ssrPass = new SSRPass({
-renderer,
-scene,
-camera,
-width: window.innerWidth,
-height: window.innerHeight,
-groundReflector: null,
-selects: [],
+  renderer,
+  scene,
+  camera,
+  width: window.innerWidth,
+  height: window.innerHeight,
+  groundReflector: null,
+  selects: null // You can specify reflective meshes if you want
 });
 composer.addPass(ssrPass);
-
-// GUI for SSR
-const ssrFolder = gui.addFolder('SSR Settings');
-ssrFolder.add(ssrPass, 'thickness', 0, 1).step(0.01);
-ssrFolder.add(ssrPass, 'maxDistance', 0, 10).step(0.1);
-ssrFolder.add(ssrPass, 'opacity', 0, 1).step(0.01);
-ssrFolder.add(ssrPass, 'blur', 0, 1).step(0.01);
-ssrFolder.open();
 
 // Animation loop
 function animate() {
@@ -259,5 +251,6 @@ window.addEventListener('resize', () => {
   camera.aspect = window.innerWidth / window.innerHeight;
   camera.updateProjectionMatrix();
   renderer.setSize(window.innerWidth, window.innerHeight);
+  composer.setSize(window.innerWidth, window.innerHeight);
   
 });
