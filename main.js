@@ -283,10 +283,16 @@ loader.load('model.glb', (gltf) => {
 const composer = new EffectComposer(renderer);
 composer.addPass(new RenderPass(scene, camera));
 
-// Find meshes by name individually
-const mesh1 = scene.getObjectByName('MANIFOLD_SOLID_BREP #1042007');
-const mesh2 = scene.getObjectByName('CS23X1_US_KEY.77');
-const mesh3 = scene.getObjectByName('240\MANIFOLD_SOLID_BREP #1669');
+// Collect meshes by name for reflection
+const reflectiveMeshes = [];
+scene.traverse((child) => {
+  if (child.isMesh) {
+    // For example, select meshes whose name contains 'Reflect' (adjust as needed)
+    if (child.name.includes('Reflect')) {
+      reflectiveMeshes.push(child);
+    }
+  }
+});
 
 // Filter out any null if mesh not found
 const reflectiveMeshes = [mesh1, mesh2, mesh3];
