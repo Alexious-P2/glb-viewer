@@ -235,7 +235,45 @@ const ssrPass = new SSRPass({
   groundReflector: null,
   selects: null // You can specify reflective meshes if you want
 });
+  //ssrPass.intensity = 0.3;  // Lower means less reflective
+  //ssrPass.maxRoughness = 0.5; // Between 0 (perfectly smooth) and 1 (rough)
+  //ssrPass.distance = 10; // default is often larger, lower = less reflective range
+  //ssrPass.thickness = 0.05; // controls thickness used for intersection tests (usually 0.1 default)
+  //ssrPass.fade = 0.1; //controls how reflections fade out at edges
 composer.addPass(ssrPass);
+
+// GUI controls for SSRPass
+const ssrSettings = {
+  intensity: ssrPass.intensity,
+  maxRoughness: ssrPass.maxRoughness,
+  distance: ssrPass.distance,
+  thickness: ssrPass.thickness,
+  fade: ssrPass.fade,
+};
+
+const ssrFolder = gui.addFolder('SSR Settings');
+
+ssrFolder.add(ssrSettings, 'intensity', 0, 2, 0.01).onChange((value) => {
+  ssrPass.intensity = value;
+});
+
+ssrFolder.add(ssrSettings, 'maxRoughness', 0, 1, 0.01).onChange((value) => {
+  ssrPass.maxRoughness = value;
+});
+
+ssrFolder.add(ssrSettings, 'distance', 0, 100, 1).onChange((value) => {
+  ssrPass.distance = value;
+});
+
+ssrFolder.add(ssrSettings, 'thickness', 0, 0.2, 0.001).onChange((value) => {
+  ssrPass.thickness = value;
+});
+
+ssrFolder.add(ssrSettings, 'fade', 0, 1, 0.01).onChange((value) => {
+  ssrPass.fade = value;
+});
+
+ssrFolder.open();
 
 // Animation loop
 function animate() {
