@@ -289,7 +289,6 @@ composer.addPass(ssrPass);
 groundReflector.maxDistance = ssrPass.maxDistance;
 
 // GUI
-const gui = new GUI();
 gui.add(ssrPass, 'maxDistance', 0, 0.5, 0.001).onChange(() => {
   groundReflector.maxDistance = ssrPass.maxDistance;
 });
