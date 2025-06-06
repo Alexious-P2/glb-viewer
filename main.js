@@ -146,7 +146,6 @@ ground.receiveShadow = true;
 scene.add(ground);
 
 // Ground Plane GUI Setup
-const gui = new dat.GUI();
 const groundFolder = gui.addFolder('Ground Shadow');
 
 const groundSettings = {
