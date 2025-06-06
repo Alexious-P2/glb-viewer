@@ -174,19 +174,29 @@ groundFolder.add(groundSettings, 'shadowOpacity', 0, 1).step(0.01).name('Shadow 
 
 groundFolder.open();
 
-//reflector ground ssr
- geometry = new THREE.PlaneGeometry( 1, 1 );
-  groundReflector = new ReflectorForSSRPass( geometry, {
-  clipBias: 0.0003,
+// Create ground reflector geometry
+const geometry = new THREE.PlaneGeometry(1, 1);
+
+// Create ReflectorForSSRPass instance
+const groundReflector = new ReflectorForSSRPass(geometry, {
+  clipBias: 0.0003,           // fine, small bias to avoid z-fighting
   textureWidth: window.innerWidth,
   textureHeight: window.innerHeight,
   color: 0x888888,
-  useDepthTexture: true,
-} );
+  useDepthTexture: true,      // necessary for SSR to access depth info
+});
+
+// Optional: Disable depth write to prevent z-buffer overwrite by reflector
 groundReflector.material.depthWrite = false;
-groundReflector.rotation.x = - Math.PI / 2;
+
+// Rotate to horizontal plane
+groundReflector.rotation.x = -Math.PI / 2;
+groundReflector.position.y = 0.001; // slightly above the ground
+
+// Currently invisible - usually to avoid double rendering reflections in SSR pass
 groundReflector.visible = false;
-scene.add( groundReflector );
+
+scene.add(groundReflector);
 
 /*
 // Default Reflective Plane (slightly above ground to avoid z-fighting)
