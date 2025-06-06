@@ -7,7 +7,7 @@ import { RGBELoader } from 'three/examples/jsm/loaders/RGBELoader.js';
 //import { MeshReflectorMaterial } from 'https://unpkg.com/three@0.155.0/examples/jsm/objects/MeshReflectorMaterial.js';
 //import { EffectComposer, RenderPass, EffectPass, SSRPass} from 'https://cdn.jsdelivr.net/npm/postprocessing@6.30.2/+esm';
 //import { SSRShader } from './libs/three/jsm/shaders/SSRShader.js';
-import { SSRPass } from './libs/three/jsm/postprocessing/SSRPass.js';
+import { SSRPass } from 'libs/three/jsm/postprocessing/SSRPass.js';
 
 
 // Scene
