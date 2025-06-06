@@ -283,6 +283,14 @@ loader.load('model.glb', (gltf) => {
 const composer = new EffectComposer(renderer);
 composer.addPass(new RenderPass(scene, camera));
 
+// Find meshes by name individually
+const mesh1 = scene.getObjectByName('MANIFOLD_SOLID_BREP #1042007');
+const mesh2 = scene.getObjectByName('CS23X1_US_KEY.77');
+const mesh3 = scene.getObjectByName('240\MANIFOLD_SOLID_BREP #1669');
+
+// Filter out any null if mesh not found
+const reflectiveMeshes = [mesh1, mesh2, mesh3].filter(m => m !== null);
+
 const ssrPass = new SSRPass({
   renderer,
   scene,
@@ -290,9 +298,9 @@ const ssrPass = new SSRPass({
   width: window.innerWidth,
   height: window.innerHeight,
   groundReflector: groundReflector,
-  selects: null // You can specify reflective meshes if you want
-  
+  selects: reflectiveMeshes.length > 0 ? reflectiveMeshes : null,  // null You can specify reflective meshes if you want 
 });  
+
 ssrPass.maxDistance = 0.1;
 composer.addPass(ssrPass);
 
