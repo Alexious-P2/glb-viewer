@@ -311,7 +311,9 @@ gui.add(ssrPass, 'fresnel', 0, 5).step(0.01).onChange(() => {
   groundReflector.fresnel = ssrPass.fresnel;
 });
 
-gui.add(ssrPass, 'blur');
+gui.add(ssrPass, 'blur').onChange(() => {
+  groundReflector.blur = ssrPass.blur;
+});
 
 
 // Animation loop
