@@ -311,9 +311,16 @@ gui.add(ssrPass, 'fresnel', 0, 5).step(0.01).onChange(() => {
   groundReflector.fresnel = ssrPass.fresnel;
 });
 
-gui.add(ssrPass, 'blur').onChange(() => {
-  groundReflector.blur = ssrPass.blur;
-});
+gui.add(ssrPass, 'distanceAttenuation')
+  .name('Distance Attenuation')
+  .onChange(() => {
+    groundReflector.distanceAttenuation = ssrPass.distanceAttenuation;
+  });
+
+gui.add( ssrPass, 'blur' );
+
+gui.add(ssrPass, 'bouncing').name('Enable Bouncing');
+
 
 
 // Animation loop
