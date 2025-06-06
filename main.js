@@ -16,7 +16,7 @@ import { ShaderPass } from 'three/examples/jsm/postprocessing/ShaderPass.js';
 //const scene = new THREE.Scene();
 //scene.background = new THREE.Color(0x202020);
 const sceneParams = {
-  backgroundColor: '#202020',
+  backgroundColor: '#8f8f8f',
   enableReflector: true
 };
 const scene = new THREE.Scene();
@@ -310,6 +310,8 @@ gui.add(ssrPass, 'opacity', 0, 1).step(0.01).onChange(() => {
 gui.add(ssrPass, 'fresnel', 0, 5).step(0.01).onChange(() => {
   groundReflector.fresnel = ssrPass.fresnel;
 });
+
+gui.add(ssrPass, 'blur');
 
 
 // Animation loop
