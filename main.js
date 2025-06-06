@@ -294,9 +294,6 @@ scene.traverse((child) => {
   }
 });
 
-// Filter out any null if mesh not found
-const reflectiveMeshes = [mesh1, mesh2, mesh3];
-
 const ssrPass = new SSRPass({
   renderer,
   scene,
