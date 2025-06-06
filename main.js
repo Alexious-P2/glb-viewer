@@ -378,19 +378,6 @@ composer.addPass(ssrPass);
 			// gui.close()
 
 		}
-		
-		function onWindowResize() {
-
-			camera.aspect = window.innerWidth / window.innerHeight;
-			camera.updateProjectionMatrix();
-
-			renderer.setSize( window.innerWidth, window.innerHeight );
-			composer.setSize( window.innerWidth, window.innerHeight );
-			groundReflector.getRenderTarget().setSize( window.innerWidth, window.innerHeight );
-			groundReflector.resolution.set( window.innerWidth, window.innerHeight );
-
-		}
-
 
 // Animation loop
 function animate() {
