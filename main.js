@@ -283,17 +283,6 @@ loader.load('model.glb', (gltf) => {
 const composer = new EffectComposer(renderer);
 composer.addPass(new RenderPass(scene, camera));
 
-// Collect meshes by name for reflection
-const reflectiveMeshes = [];
-scene.traverse((child) => {
-  if (child.isMesh) {
-    // For example, select meshes whose name contains 'Reflect' (adjust as needed)
-    if (child.name.includes('Reflect')) {
-      reflectiveMeshes.push(child);
-    }
-  }
-});
-
 const ssrPass = new SSRPass({
   renderer,
   scene,
@@ -301,7 +290,7 @@ const ssrPass = new SSRPass({
   width: window.innerWidth,
   height: window.innerHeight,
   groundReflector: groundReflector,
-  selects: reflectiveMeshes // null You can specify reflective meshes if you want 
+  selects: null // You can specify reflective meshes if you want 
 });  
 
 ssrPass.maxDistance = 0.1;
