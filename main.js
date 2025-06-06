@@ -254,6 +254,7 @@ loader.load('model.glb', (gltf) => {
   console.error('GLB Load Error:', error);
 });
 
+/*
 // Postprocessing SSR
 const composer = new EffectComposer(renderer);
 composer.addPass(new RenderPass(scene, camera));
@@ -274,6 +275,122 @@ const ssrPass = new SSRPass({
   infiniteThick: false
 });  
 composer.addPass(ssrPass);
+*/
+
+// SSR composer
+
+			composer = new EffectComposer( renderer );
+			ssrPass = new SSRPass( {
+				renderer,
+				scene,
+				camera,
+				width: innerWidth,
+				height: innerHeight,
+				groundReflector: params.groundReflector ? groundReflector : null,
+				selects: params.groundReflector ? selects : null
+			} );
+
+			composer.addPass( ssrPass );
+			composer.addPass( new OutputPass() );
+
+			// GUI
+
+			gui = new GUI( { width: 260 } );
+			gui.add( params, 'enableSSR' ).name( 'Enable SSR' );
+			gui.add( params, 'groundReflector' ).onChange( () => {
+
+				if ( params.groundReflector ) {
+
+					ssrPass.groundReflector = groundReflector,
+					ssrPass.selects = selects;
+
+				} else {
+
+					ssrPass.groundReflector = null,
+					ssrPass.selects = null;
+
+				}
+
+			} );
+			ssrPass.thickness = 0.018;
+			gui.add( ssrPass, 'thickness' ).min( 0 ).max( .1 ).step( .0001 );
+			ssrPass.infiniteThick = false;
+			gui.add( ssrPass, 'infiniteThick' );
+			gui.add( params, 'autoRotate' ).onChange( () => {
+
+				controls.enabled = ! params.autoRotate;
+
+			} );
+
+			const folder = gui.addFolder( 'more settings' );
+			folder.add( ssrPass, 'fresnel' ).onChange( ()=>{
+
+				groundReflector.fresnel = ssrPass.fresnel;
+
+			} );
+			folder.add( ssrPass, 'distanceAttenuation' ).onChange( ()=>{
+
+				groundReflector.distanceAttenuation = ssrPass.distanceAttenuation;
+
+			} );
+			ssrPass.maxDistance = .1;
+			groundReflector.maxDistance = ssrPass.maxDistance;
+			folder.add( ssrPass, 'maxDistance' ).min( 0 ).max( .5 ).step( .001 ).onChange( ()=>{
+
+				groundReflector.maxDistance = ssrPass.maxDistance;
+
+			} );
+			folder.add( params, 'otherMeshes' ).onChange( () => {
+
+				if ( params.otherMeshes ) {
+
+					otherMeshes.forEach( mesh => mesh.visible = true );
+
+				} else {
+
+					otherMeshes.forEach( mesh => mesh.visible = false );
+
+				}
+
+			} );
+			folder.add( ssrPass, 'bouncing' );
+			folder.add( ssrPass, 'output', {
+				'Default': SSRPass.OUTPUT.Default,
+				'SSR Only': SSRPass.OUTPUT.SSR,
+				'Beauty': SSRPass.OUTPUT.Beauty,
+				'Depth': SSRPass.OUTPUT.Depth,
+				'Normal': SSRPass.OUTPUT.Normal,
+				'Metalness': SSRPass.OUTPUT.Metalness,
+			} ).onChange( function ( value ) {
+
+				ssrPass.output = value;
+
+			} );
+			ssrPass.opacity = 1;
+			groundReflector.opacity = ssrPass.opacity;
+			folder.add( ssrPass, 'opacity' ).min( 0 ).max( 1 ).onChange( ()=>{
+
+				groundReflector.opacity = ssrPass.opacity;
+
+			} );
+			folder.add( ssrPass, 'blur' );
+			// folder.open()
+			// gui.close()
+
+		}
+		
+		function onWindowResize() {
+
+			camera.aspect = window.innerWidth / window.innerHeight;
+			camera.updateProjectionMatrix();
+
+			renderer.setSize( window.innerWidth, window.innerHeight );
+			composer.setSize( window.innerWidth, window.innerHeight );
+			groundReflector.getRenderTarget().setSize( window.innerWidth, window.innerHeight );
+			groundReflector.resolution.set( window.innerWidth, window.innerHeight );
+
+		}
+
 
 // Animation loop
 function animate() {
