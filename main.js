@@ -292,7 +292,7 @@ const ssrPass = new SSRPass({
   width: window.innerWidth,
   height: window.innerHeight,
   groundReflector: groundReflector,
-  selects: [reflectiveMesh] // null You can specify reflective meshes if you want 
+  selects: null // null You can specify reflective meshes if you want 
 });  
 
 ssrPass.maxDistance = 0.1;
