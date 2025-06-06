@@ -266,6 +266,12 @@ const ssrPass = new SSRPass({
   height: window.innerHeight,
   groundReflector: null,
   selects: null // You can specify reflective meshes if you want
+  
+  maxDistance: 10,
+  surfelSize: 0.5,
+  maxDepthDifference: 1,
+  thickness: 0.05, // lower = less stretching
+  infiniteThick: false
 });  
 composer.addPass(ssrPass);
 
