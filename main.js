@@ -3,8 +3,8 @@ import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
 import { GUI } from 'https://cdn.jsdelivr.net/npm/lil-gui@0.18/+esm';
 import { RGBELoader } from 'three/examples/jsm/loaders/RGBELoader.js';
-import { Reflector } from 'https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/objects/Reflector.js';
-//import { MeshReflectorMaterial } from 'https://cdn.jsdelivr.net/npm/three@0.160.1/examples/jsm/objects/MeshReflectorMaterial.js';
+//import { Reflector } from 'https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/objects/Reflector.js';
+import { MeshReflectorMaterial } from 'https://unpkg.com/three@0.155.0/examples/jsm/objects/MeshReflectorMaterial.js';
 //import { EffectComposer, RenderPass, EffectPass, SSRPass} from 'https://cdn.jsdelivr.net/npm/postprocessing@6.30.2/+esm';
 
 // Scene
@@ -142,7 +142,8 @@ ground.position.y = 0;
 ground.receiveShadow = true;
 scene.add(ground);
 
-// Reflective Plane (slightly above ground to avoid z-fighting)
+/*
+// Default Reflective Plane (slightly above ground to avoid z-fighting)
 const reflector = new Reflector(new THREE.PlaneGeometry(10, 10), {
   color: new THREE.Color(0x444444),
   textureWidth: window.innerWidth * window.devicePixelRatio,
@@ -155,20 +156,7 @@ reflector.material.transparent = true; // Make reflector transparent
 reflector.material.opacity = 0.05; // ← adjust this for the desired blend of reflection vs background
 scene.add(reflector);
 
-/*
-// Add GUI control
-const reflectorParams = {
-  enabled: true
-};
-
-const reflectorFolder = gui.addFolder('Reflector Plane');
-reflectorFolder.add(reflectorParams, 'enabled').name('Show Reflector').onChange((value) => {
-  reflector.visible = value;
-});
-reflectorFolder.open();
-*/
-
-// Reflector toggle control
+// Reflector GUI toggle control
 const sceneFolder = gui.addFolder('Scene Settings');
 sceneFolder.addColor(sceneParams, 'backgroundColor').name('Background').onChange((value) => {
   scene.background.set(value);
@@ -177,8 +165,8 @@ sceneFolder.add(sceneParams, 'enableReflector').name('Enable Reflector').onChang
   reflector.visible = enabled;
 });
 sceneFolder.open();
+*/
 
-/*
 // Reflective ground plane
 const groundGeo = new THREE.PlaneGeometry(20, 20);
 const groundMat = new MeshReflectorMaterial({
@@ -198,10 +186,9 @@ const groundMat = new MeshReflectorMaterial({
 
 const ground = new THREE.Mesh(groundGeo, groundMat);
 ground.rotation.x = -Math.PI / 2;
-ground.position.y = 0;
+ground.position.y = 0.001;
 ground.receiveShadow = true;
 scene.add(ground);
-*/
 
 // Load GLB model
 /*
