@@ -4,8 +4,11 @@ import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
 import { GUI } from 'https://cdn.jsdelivr.net/npm/lil-gui@0.18/+esm';
 import { RGBELoader } from 'three/examples/jsm/loaders/RGBELoader.js';
 //import { Reflector } from 'https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/objects/Reflector.js';
-import { MeshReflectorMaterial } from 'https://unpkg.com/three@0.155.0/examples/jsm/objects/MeshReflectorMaterial.js';
+//import { MeshReflectorMaterial } from 'https://unpkg.com/three@0.155.0/examples/jsm/objects/MeshReflectorMaterial.js';
 //import { EffectComposer, RenderPass, EffectPass, SSRPass} from 'https://cdn.jsdelivr.net/npm/postprocessing@6.30.2/+esm';
+//import { SSRShader } from './libs/three/jsm/shaders/SSRShader.js';
+import { SSRShader } from './libs/three\jsm\postprocessing\SSRPass.js';
+
 
 // Scene
 //const scene = new THREE.Scene();
@@ -218,12 +221,36 @@ loader.load('model.glb', (gltf) => {
   console.error('GLB Load Error:', error);
 });
 
+// SSR Setup
+const composer = new EffectComposer(renderer);
+const renderPass = new RenderPass(scene, camera);
+composer.addPass(renderPass);
+
+const ssrPass = new SSRPass({
+renderer,
+scene,
+camera,
+width: window.innerWidth,
+height: window.innerHeight,
+groundReflector: null,
+selects: [],
+});
+composer.addPass(ssrPass);
+
+// GUI for SSR
+const ssrFolder = gui.addFolder('SSR Settings');
+ssrFolder.add(ssrPass, 'thickness', 0, 1).step(0.01);
+ssrFolder.add(ssrPass, 'maxDistance', 0, 10).step(0.1);
+ssrFolder.add(ssrPass, 'opacity', 0, 1).step(0.01);
+ssrFolder.add(ssrPass, 'blur', 0, 1).step(0.01);
+ssrFolder.open();
+
 // Animation loop
 function animate() {
   requestAnimationFrame(animate);
   controls.update();
-  renderer.render(scene, camera);
-  //composer.render();
+  //renderer.render(scene, camera);
+  composer.render();
 }
 animate();
 
