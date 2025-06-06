@@ -3,7 +3,7 @@ import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
 import { GUI } from 'https://cdn.jsdelivr.net/npm/lil-gui@0.18/+esm';
 import { RGBELoader } from 'three/examples/jsm/loaders/RGBELoader.js';
-import { Reflector } from 'https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/objects/Reflector.js';
+//import { Reflector } from 'https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/objects/Reflector.js';
 import { EffectComposer } from 'three/examples/jsm/postprocessing/EffectComposer.js';
 import { RenderPass } from 'three/examples/jsm/postprocessing/RenderPass.js';
 import { SSRPass } from 'https://cdn.jsdelivr.net/npm/three@0.160.1/examples/jsm/postprocessing/SSRPass.js';
@@ -137,7 +137,7 @@ ambientFolder.open();
 
 // Ground Plane
 const groundGeo = new THREE.PlaneGeometry(20, 20);
-const groundMat = new THREE.ShadowMaterial({ opacity: 0.3, roughness: 0.1, metalness: 0.1 });
+const groundMat = new THREE.ShadowMaterial({ opacity: 0.3 });
 
 const ground = new THREE.Mesh(groundGeo, groundMat);
 ground.rotation.x = -Math.PI / 2;
@@ -145,6 +145,7 @@ ground.position.y = 0;
 ground.receiveShadow = true;
 scene.add(ground);
 
+/*
 // Default Reflective Plane (slightly above ground to avoid z-fighting)
 const reflector = new Reflector(new THREE.PlaneGeometry(10, 10), {
   color: new THREE.Color(0x444444),
@@ -167,6 +168,8 @@ sceneFolder.add(sceneParams, 'enableReflector').name('Enable Reflector').onChang
   reflector.visible = enabled;
 });
 sceneFolder.open();
+*/
+
 
 /*
 // Reflective ground plane MeshReflectorMaterial
@@ -235,10 +238,14 @@ const ssrPass = new SSRPass({
   groundReflector: null,
   selects: null // You can specify reflective meshes if you want
 });
-  ssrPass.SSR = 0.3;
-  ssrPass.metalness = 1;
-  ssrPass.depth = 2;
-  ssrPass.beauty = 3;
+  SSRPass.OUTPUT = {
+	'Default': 0,
+	'SSR': .5,
+	'Beauty': 3,
+	'Depth': 4,
+	'Normal': 5,
+	'Metalness': 2,
+};
 composer.addPass(ssrPass);
 
 // Animation loop
