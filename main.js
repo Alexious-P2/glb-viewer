@@ -283,6 +283,8 @@ loader.load('model.glb', (gltf) => {
 const composer = new EffectComposer(renderer);
 composer.addPass(new RenderPass(scene, camera));
 
+const reflectiveMesh = scene.getObjectByName('kbBase_Reflect');
+
 const ssrPass = new SSRPass({
   renderer,
   scene,
@@ -290,7 +292,7 @@ const ssrPass = new SSRPass({
   width: window.innerWidth,
   height: window.innerHeight,
   groundReflector: groundReflector,
-  selects: null // You can specify reflective meshes if you want 
+  selects: [reflectiveMesh] // null You can specify reflective meshes if you want 
 });  
 
 ssrPass.maxDistance = 0.1;
