@@ -243,35 +243,30 @@ const ssrPass = new SSRPass({
 composer.addPass(ssrPass);
 
 // GUI controls for SSRPass
-const ssrSettings = {
-  intensity: ssrPass.intensity,
-  maxRoughness: ssrPass.maxRoughness,
-  distance: ssrPass.distance,
-  thickness: ssrPass.thickness,
-  fade: ssrPass.fade,
-};
-
 const ssrFolder = gui.addFolder('SSR Settings');
 
-ssrFolder.add(ssrSettings, 'intensity', 0, 2, 0.01).onChange((value) => {
-  ssrPass.intensity = value;
-});
+const ssrSettings = {
+  get intensity() { return ssrPass.uniforms.intensity.value; },
+  set intensity(v) { ssrPass.uniforms.intensity.value = v; },
 
-ssrFolder.add(ssrSettings, 'maxRoughness', 0, 1, 0.01).onChange((value) => {
-  ssrPass.maxRoughness = value;
-});
+  get maxRoughness() { return ssrPass.uniforms.maxRoughness.value; },
+  set maxRoughness(v) { ssrPass.uniforms.maxRoughness.value = v; },
 
-ssrFolder.add(ssrSettings, 'distance', 0, 100, 1).onChange((value) => {
-  ssrPass.distance = value;
-});
+  get distance() { return ssrPass.uniforms.distance.value; },
+  set distance(v) { ssrPass.uniforms.distance.value = v; },
 
-ssrFolder.add(ssrSettings, 'thickness', 0, 0.2, 0.001).onChange((value) => {
-  ssrPass.thickness = value;
-});
+  get thickness() { return ssrPass.uniforms.thickness.value; },
+  set thickness(v) { ssrPass.uniforms.thickness.value = v; },
 
-ssrFolder.add(ssrSettings, 'fade', 0, 1, 0.01).onChange((value) => {
-  ssrPass.fade = value;
-});
+  get fade() { return ssrPass.uniforms.fade.value; },
+  set fade(v) { ssrPass.uniforms.fade.value = v; },
+};
+
+ssrFolder.add(ssrSettings, 'intensity', 0, 2, 0.01).name('Intensity');
+ssrFolder.add(ssrSettings, 'maxRoughness', 0, 1, 0.01).name('Max Roughness');
+ssrFolder.add(ssrSettings, 'distance', 0, 100, 1).name('Distance');
+ssrFolder.add(ssrSettings, 'thickness', 0, 0.2, 0.001).name('Thickness');
+ssrFolder.add(ssrSettings, 'fade', 0, 1, 0.01).name('Fade');
 
 ssrFolder.open();
 
