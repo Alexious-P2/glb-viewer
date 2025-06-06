@@ -304,6 +304,15 @@ gui.add(ssrPass, 'maxDistance', 0, 0.5, 0.001).onChange(() => {
   groundReflector.maxDistance = ssrPass.maxDistance;
 });
 
+// Initialize values
+ssrPass.opacity = 1;
+groundReflector.opacity = ssrPass.opacity;
+
+// Add opacity control to GUI
+gui.add(ssrPass, 'opacity', 0, 1).step(0.01).name('SSR Opacity').onChange(() => {
+  groundReflector.opacity = ssrPass.opacity;
+});
+
 
 // Animation loop
 function animate() {
