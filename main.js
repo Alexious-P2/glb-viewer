@@ -235,40 +235,12 @@ const ssrPass = new SSRPass({
   groundReflector: null,
   selects: null // You can specify reflective meshes if you want
 });
-  //ssrPass.intensity = 0.3;  // Lower means less reflective
-  //ssrPass.maxRoughness = 0.5; // Between 0 (perfectly smooth) and 1 (rough)
-  //ssrPass.distance = 10; // default is often larger, lower = less reflective range
-  //ssrPass.thickness = 0.05; // controls thickness used for intersection tests (usually 0.1 default)
-  //ssrPass.fade = 0.1; //controls how reflections fade out at edges
+  ssrPass.intensity = 0.3;  // Lower means less reflective
+  ssrPass.maxRoughness = 0.5; // Between 0 (perfectly smooth) and 1 (rough)
+  ssrPass.distance = 10; // default is often larger, lower = less reflective range
+  ssrPass.thickness = 0.05; // controls thickness used for intersection tests (usually 0.1 default)
+  ssrPass.fade = 0.1; //controls how reflections fade out at edges
 composer.addPass(ssrPass);
-
-// GUI controls for SSRPass
-const ssrFolder = gui.addFolder('SSR Settings');
-
-const ssrSettings = {
-  get intensity() { return ssrPass.uniforms.intensity.value; },
-  set intensity(v) { ssrPass.uniforms.intensity.value = v; },
-
-  get maxRoughness() { return ssrPass.uniforms.maxRoughness.value; },
-  set maxRoughness(v) { ssrPass.uniforms.maxRoughness.value = v; },
-
-  get distance() { return ssrPass.uniforms.distance.value; },
-  set distance(v) { ssrPass.uniforms.distance.value = v; },
-
-  get thickness() { return ssrPass.uniforms.thickness.value; },
-  set thickness(v) { ssrPass.uniforms.thickness.value = v; },
-
-  get fade() { return ssrPass.uniforms.fade.value; },
-  set fade(v) { ssrPass.uniforms.fade.value = v; },
-};
-
-ssrFolder.add(ssrSettings, 'intensity', 0, 2, 0.01).name('Intensity');
-ssrFolder.add(ssrSettings, 'maxRoughness', 0, 1, 0.01).name('Max Roughness');
-ssrFolder.add(ssrSettings, 'distance', 0, 100, 1).name('Distance');
-ssrFolder.add(ssrSettings, 'thickness', 0, 0.2, 0.001).name('Thickness');
-ssrFolder.add(ssrSettings, 'fade', 0, 1, 0.01).name('Fade');
-
-ssrFolder.open();
 
 // Animation loop
 function animate() {
