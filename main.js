@@ -289,7 +289,7 @@ const mesh2 = scene.getObjectByName('CS23X1_US_KEY.77');
 const mesh3 = scene.getObjectByName('240\MANIFOLD_SOLID_BREP #1669');
 
 // Filter out any null if mesh not found
-const reflectiveMeshes = [mesh1, mesh2, mesh3].filter(m => m !== null);
+const reflectiveMeshes = [mesh1, mesh2, mesh3];
 
 const ssrPass = new SSRPass({
   renderer,
@@ -298,7 +298,7 @@ const ssrPass = new SSRPass({
   width: window.innerWidth,
   height: window.innerHeight,
   groundReflector: groundReflector,
-  selects: reflectiveMeshes.length > 0 ? reflectiveMeshes : null,  // null You can specify reflective meshes if you want 
+  selects: reflectiveMeshes // null You can specify reflective meshes if you want 
 });  
 
 ssrPass.maxDistance = 0.1;
