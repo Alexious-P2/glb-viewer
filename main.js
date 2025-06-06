@@ -174,6 +174,20 @@ groundFolder.add(groundSettings, 'shadowOpacity', 0, 1).step(0.01).name('Shadow 
 
 groundFolder.open();
 
+//reflector ground ssr
+ geometry = new THREE.PlaneGeometry( 1, 1 );
+  groundReflector = new ReflectorForSSRPass( geometry, {
+  clipBias: 0.0003,
+  textureWidth: window.innerWidth,
+  textureHeight: window.innerHeight,
+  color: 0x888888,
+  useDepthTexture: true,
+} );
+groundReflector.material.depthWrite = false;
+groundReflector.rotation.x = - Math.PI / 2;
+groundReflector.visible = false;
+scene.add( groundReflector );
+
 /*
 // Default Reflective Plane (slightly above ground to avoid z-fighting)
 const reflector = new Reflector(new THREE.PlaneGeometry(10, 10), {
@@ -254,7 +268,6 @@ loader.load('model.glb', (gltf) => {
   console.error('GLB Load Error:', error);
 });
 
-/*
 // Postprocessing SSR
 const composer = new EffectComposer(renderer);
 composer.addPass(new RenderPass(scene, camera));
@@ -265,118 +278,22 @@ const ssrPass = new SSRPass({
   camera,
   width: window.innerWidth,
   height: window.innerHeight,
-  groundReflector: null,
+  groundReflector: groundReflector,
   selects: null // You can specify reflective meshes if you want
   
-  maxDistance: 10,
-  surfelSize: 0.5,
-  maxDepthDifference: 1,
-  thickness: 0.05, // lower = less stretching
-  infiniteThick: false
 });  
+ssrPass.maxDistance = 0.1;
 composer.addPass(ssrPass);
-*/
 
-// SSR composer
+// Sync maxDistance between SSR and ground reflector
+groundReflector.maxDistance = ssrPass.maxDistance;
 
-			composer = new EffectComposer( renderer );
-			ssrPass = new SSRPass( {
-				renderer,
-				scene,
-				camera,
-				width: innerWidth,
-				height: innerHeight,
-				groundReflector: params.groundReflector ? groundReflector : null,
-				selects: params.groundReflector ? selects : null
-			} );
+// GUI
+const gui = new GUI();
+gui.add(ssrPass, 'maxDistance', 0, 0.5, 0.001).onChange(() => {
+  groundReflector.maxDistance = ssrPass.maxDistance;
+});
 
-			composer.addPass( ssrPass );
-			composer.addPass( new OutputPass() );
-
-			// GUI
-
-			gui = new GUI( { width: 260 } );
-			gui.add( params, 'enableSSR' ).name( 'Enable SSR' );
-			gui.add( params, 'groundReflector' ).onChange( () => {
-
-				if ( params.groundReflector ) {
-
-					ssrPass.groundReflector = groundReflector,
-					ssrPass.selects = selects;
-
-				} else {
-
-					ssrPass.groundReflector = null,
-					ssrPass.selects = null;
-
-				}
-
-			} );
-			ssrPass.thickness = 0.018;
-			gui.add( ssrPass, 'thickness' ).min( 0 ).max( .1 ).step( .0001 );
-			ssrPass.infiniteThick = false;
-			gui.add( ssrPass, 'infiniteThick' );
-			gui.add( params, 'autoRotate' ).onChange( () => {
-
-				controls.enabled = ! params.autoRotate;
-
-			} );
-
-			const folder = gui.addFolder( 'more settings' );
-			folder.add( ssrPass, 'fresnel' ).onChange( ()=>{
-
-				groundReflector.fresnel = ssrPass.fresnel;
-
-			} );
-			folder.add( ssrPass, 'distanceAttenuation' ).onChange( ()=>{
-
-				groundReflector.distanceAttenuation = ssrPass.distanceAttenuation;
-
-			} );
-			ssrPass.maxDistance = .1;
-			groundReflector.maxDistance = ssrPass.maxDistance;
-			folder.add( ssrPass, 'maxDistance' ).min( 0 ).max( .5 ).step( .001 ).onChange( ()=>{
-
-				groundReflector.maxDistance = ssrPass.maxDistance;
-
-			} );
-			folder.add( params, 'otherMeshes' ).onChange( () => {
-
-				if ( params.otherMeshes ) {
-
-					otherMeshes.forEach( mesh => mesh.visible = true );
-
-				} else {
-
-					otherMeshes.forEach( mesh => mesh.visible = false );
-
-				}
-
-			} );
-			folder.add( ssrPass, 'bouncing' );
-			folder.add( ssrPass, 'output', {
-				'Default': SSRPass.OUTPUT.Default,
-				'SSR Only': SSRPass.OUTPUT.SSR,
-				'Beauty': SSRPass.OUTPUT.Beauty,
-				'Depth': SSRPass.OUTPUT.Depth,
-				'Normal': SSRPass.OUTPUT.Normal,
-				'Metalness': SSRPass.OUTPUT.Metalness,
-			} ).onChange( function ( value ) {
-
-				ssrPass.output = value;
-
-			} );
-			ssrPass.opacity = 1;
-			groundReflector.opacity = ssrPass.opacity;
-			folder.add( ssrPass, 'opacity' ).min( 0 ).max( 1 ).onChange( ()=>{
-
-				groundReflector.opacity = ssrPass.opacity;
-
-			} );
-			folder.add( ssrPass, 'blur' );
-			// folder.open()
-			// gui.close()
-			
 
 // Animation loop
 function animate() {
