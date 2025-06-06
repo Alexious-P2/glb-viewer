@@ -376,8 +376,7 @@ composer.addPass(ssrPass);
 			folder.add( ssrPass, 'blur' );
 			// folder.open()
 			// gui.close()
-
-		}
+			
 
 // Animation loop
 function animate() {
