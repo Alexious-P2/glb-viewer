@@ -40,6 +40,17 @@ controls.enableDamping = true;
 // GUI
 const gui = new GUI();
 
+// Scene background color GUI control
+const sceneFolder = gui.addFolder('Scene Settings');
+
+sceneFolder.addColor(sceneParams, 'backgroundColor')
+  .name('Background Color')
+  .onChange((value) => {
+    scene.background.set(value);
+  });
+
+sceneFolder.open();
+
 // Load HDRI for lighting and reflections
 const hdriPath = 'hdri/lightroom_14b_low.hdr'; // Make sure the file is in your GitHub repo
 const rgbeLoader = new RGBELoader();
@@ -186,7 +197,7 @@ sceneFolder.add(sceneParams, 'enableReflector').name('Enable Reflector').onChang
   reflector.visible = enabled;
 });
 sceneFolder.open();
-*/
+
 
 
 /*
@@ -255,15 +266,7 @@ const ssrPass = new SSRPass({
   height: window.innerHeight,
   groundReflector: null,
   selects: null // You can specify reflective meshes if you want
-});
-  SSRPass.OUTPUT = {
-	'Default': 0,
-	'SSR': .5,
-	'Beauty': 3,
-	'Depth': 4,
-	'Normal': 5,
-	'Metalness': 2,
-};
+});  
 composer.addPass(ssrPass);
 
 // Animation loop
