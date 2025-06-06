@@ -131,7 +131,7 @@ const ambientFolder = gui.addFolder('Ambient Light');
 ambientFolder.add(ambientLight, 'intensity', 0, 2, 0.01).name('Intensity');
 ambientFolder.open();
 
-
+/*
 // Ground Plane
 const groundGeo = new THREE.PlaneGeometry(20, 20);
 const groundMat = new THREE.ShadowMaterial({ opacity: 0.3, roughness: 0.1, metalness: 0.1 });
@@ -142,7 +142,6 @@ ground.position.y = 0;
 ground.receiveShadow = true;
 scene.add(ground);
 
-/*
 // Default Reflective Plane (slightly above ground to avoid z-fighting)
 const reflector = new Reflector(new THREE.PlaneGeometry(10, 10), {
   color: new THREE.Color(0x444444),
