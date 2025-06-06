@@ -17,8 +17,27 @@ const sceneParams = {
 const scene = new THREE.Scene();
 scene.background = new THREE.Color(sceneParams.backgroundColor);
 
+// Camera
+const camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 0.1, 1000);
+camera.position.set(2, 2, 5);
+
+// Renderer
+const renderer = new THREE.WebGLRenderer({ antialias: true });
+renderer.shadowMap.enabled = true;
+renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+renderer.setSize(window.innerWidth, window.innerHeight);
+renderer.outputEncoding = THREE.sRGBEncoding;
+document.body.appendChild(renderer.domElement);
+
+// Controls
+const controls = new OrbitControls(camera, renderer.domElement);
+controls.enableDamping = true;
+
+// GUI
+const gui = new GUI();
+
 // Load HDRI for lighting and reflections
-const hdriPath = 'hdri/lightroom_14b.hdr'; // Make sure the file is in your GitHub repo
+const hdriPath = 'hdri/lightroom_14b_low.hdr'; // Make sure the file is in your GitHub repo
 const rgbeLoader = new RGBELoader();
 
 rgbeLoader.load(hdriPath, (hdrTexture) => {
@@ -43,25 +62,6 @@ gui.add(envSettings, 'intensity', 0, 5, 0.1).name('HDRI Intensity').onChange(() 
     }
   });
 });
-
-// Camera
-const camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 0.1, 1000);
-camera.position.set(2, 2, 5);
-
-// Renderer
-const renderer = new THREE.WebGLRenderer({ antialias: true });
-renderer.shadowMap.enabled = true;
-renderer.shadowMap.type = THREE.PCFSoftShadowMap;
-renderer.setSize(window.innerWidth, window.innerHeight);
-renderer.outputEncoding = THREE.sRGBEncoding;
-document.body.appendChild(renderer.domElement);
-
-// Controls
-const controls = new OrbitControls(camera, renderer.domElement);
-controls.enableDamping = true;
-
-// GUI
-const gui = new GUI();
 
 // Lights
 const lightParams = {
