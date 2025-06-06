@@ -298,29 +298,16 @@ const ssrPass = new SSRPass({
 ssrPass.maxDistance = 0.1;
 composer.addPass(ssrPass);
 
-// Sync maxDistance between SSR and ground reflector
-groundReflector.maxDistance = ssrPass.maxDistance;
-
 // GUI
-gui.add(ssrPass, 'maxDistance', 0, 0.5, 0.001).onChange(() => {
+gui.add(ssrPass, 'maxDistance', 0, 1).step(0.01).onChange(() => {
   groundReflector.maxDistance = ssrPass.maxDistance;
 });
 
-// Initialize values
-ssrPass.opacity = 1;
-groundReflector.opacity = ssrPass.opacity;
-
-// Add opacity control to GUI
-gui.add(ssrPass, 'opacity', 0, 1).step(0.01).name('SSR Opacity').onChange(() => {
+gui.add(ssrPass, 'opacity', 0, 1).step(0.01).onChange(() => {
   groundReflector.opacity = ssrPass.opacity;
 });
 
-// Initialize values if needed
-ssrPass.fresnel = ssrPass.fresnel ?? 1.0;  // example default
-groundReflector.fresnel = ssrPass.fresnel;
-
-// Add fresnel control to GUI with min, max, step for smooth control
-gui.add(ssrPass, 'fresnel', 0, 5).step(0.01).name('Fresnel').onChange(() => {
+gui.add(ssrPass, 'fresnel', 0, 5).step(0.01).onChange(() => {
   groundReflector.fresnel = ssrPass.fresnel;
 });
 
