@@ -102,8 +102,8 @@ dirLightA.shadow.camera.right = 5;
 dirLightA.shadow.camera.top = 5;
 dirLightA.shadow.camera.bottom = -5;
 //dirLightA.shadow.bias = -0.05; //-.0005
-dirLightA.shadow.normalBias = 0.01; //.02 default //.05 extending // .01 good // Or try 0.01 to reduce jagginess
-dirLightA.shadow.radius = 6;
+dirLightA.shadow.normalBias = 0.005; //.02 default //.05 extending // .01 good // Or try 0.01 to reduce jagginess
+dirLightA.shadow.radius = 10;
 
 scene.add(dirLightA);
 const helperA = new THREE.DirectionalLightHelper(dirLightA, 0.3);
