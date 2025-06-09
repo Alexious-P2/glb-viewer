@@ -167,8 +167,7 @@ const groundSettings = {
   shadowOpacity: 0.3,
 };
 // GUI for shadow blur
-groundFolder.add(dirLight.shadow, 'radius', 0, 20).step(0.1).name('Blur Radius');
-groundFolder.open();
+groundFolder.add(dirLightA.shadow, 'radius', 0, 20).step(0.1).name('Blur Radius');
 
 groundFolder.add(groundSettings, 'showShadow').name('Enable Shadow').onChange((val) => {
   ground.visible = val;
