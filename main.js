@@ -295,7 +295,7 @@ const ssrPass = new SSRPass({
   selects: reflectiveMesh // null You can specify reflective meshes if you want 
 });  
 
-ssrPass.maxDistance = 0.1;
+ssrPass.maxDistance = 0.05;
 composer.addPass(ssrPass);
 
 // GUI
