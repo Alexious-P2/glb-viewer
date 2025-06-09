@@ -9,6 +9,7 @@ import { ReflectorForSSRPass } from 'three/examples/jsm/objects/ReflectorForSSRP
 import { RenderPass } from 'three/examples/jsm/postprocessing/RenderPass.js';
 import { SSRPass } from 'https://cdn.jsdelivr.net/npm/three@0.160.1/examples/jsm/postprocessing/SSRPass.js';
 import { ShaderPass } from 'three/examples/jsm/postprocessing/ShaderPass.js';
+import {
 //import { MeshReflectorMaterial } from 'https://unpkg.com/three@0.155.0/examples/jsm/objects/MeshReflectorMaterial.js';
 //import { EffectComposer, RenderPass, EffectPass, SSRPass} from 'https://cdn.jsdelivr.net/npm/postprocessing@6.30.2/+esm';
 
@@ -40,6 +41,7 @@ controls.enableDamping = true;
 
 // GUI
 const gui = new GUI();
+
 
 // Scene background color GUI control
 const sceneFolder = gui.addFolder('Scene Settings');
@@ -78,6 +80,16 @@ gui.add(envSettings, 'intensity', 0, 5, 0.1).name('HDRI Intensity').onChange(() 
     }
   });
 });
+
+// Soft Shadows via global (CDN) import
+window.softShadows({
+  frustum: 3.75,
+  size: 0.005,
+  near: 9.5,
+  samples: 17,
+  rings: 11
+});
+
 
 // Lights
 const lightParams = {
