@@ -81,14 +81,14 @@ gui.add(envSettings, 'intensity', 0, 5, 0.1).name('HDRI Intensity').onChange(() 
 });
 
 // Soft Shadows via global (CDN) import
-window.softShadows({
-  frustum: 3.75,
+const softShadows = window.softShadows;
+
+softShadows({
   size: 0.005,
-  near: 9.5,
+  frustum: 3.75,
   samples: 17,
   rings: 11
 });
-
 
 // Lights
 const lightParams = {
