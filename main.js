@@ -92,8 +92,8 @@ const lightParams = {
 const dirLightA = new THREE.DirectionalLight(0xffffff, lightParams.intensity);
 dirLightA.castShadow = true;
 
-dirLightA.shadow.mapSize.width = 8192;
-dirLightA.shadow.mapSize.height = 8192;
+dirLightA.shadow.mapSize.width = 2048;
+dirLightA.shadow.mapSize.height = 2048;
 
 dirLightA.shadow.camera.near = 0.1;
 dirLightA.shadow.camera.far = 10;
@@ -101,7 +101,7 @@ dirLightA.shadow.camera.left = -5;
 dirLightA.shadow.camera.right = 5;
 dirLightA.shadow.camera.top = 5;
 dirLightA.shadow.camera.bottom = -5;
-dirLightA.shadow.bias = -0.05; //-.0005
+//dirLightA.shadow.bias = -0.05; //-.0005
 dirLightA.shadow.normalBias = 0.005; //.02 default //.05 extending // .01 good // Or try 0.01 to reduce jagginess
 dirLightA.shadow.radius = 10;
 
@@ -177,7 +177,7 @@ groundFolder.add(groundSettings, 'shadowOpacity', 0, 1).step(0.01).name('Shadow 
 
 groundFolder.add(dirLightA.shadow, 'radius', 0, 20).step(0.1).name('Blur Radius');
 groundFolder.add(dirLightA.shadow, 'normalBias', 0, 0.2).step(0.001).name('Normal Bias');
-groundFolder.add(dirLightA.shadow, 'bias', 0, 0.2).step(0.001).name('Shadow Bias');
+//groundFolder.add(dirLightA.shadow, 'bias', 0, 0.2).step(0.001).name('Shadow Bias');
 
 groundFolder.open();
 
