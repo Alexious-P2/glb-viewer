@@ -3,13 +3,14 @@ import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
 import { GUI } from 'https://cdn.jsdelivr.net/npm/lil-gui@0.18/+esm';
 import { RGBELoader } from 'three/examples/jsm/loaders/RGBELoader.js';
-import { SSREffect } from 'screen-space-reflections';
-//import { SSRPass } from 'https://cdn.jsdelivr.net/npm/three@0.160.1/examples/jsm/postprocessing/SSRPass.js';
-import { Reflector } from 'https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/objects/Reflector.js';
-import { ReflectorForSSRPass } from 'three/examples/jsm/objects/ReflectorForSSRPass.js';
+//import { Reflector } from 'https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/objects/Reflector.js';
 import { EffectComposer } from 'three/examples/jsm/postprocessing/EffectComposer.js';
+import { ReflectorForSSRPass } from 'three/examples/jsm/objects/ReflectorForSSRPass.js';
 import { RenderPass } from 'three/examples/jsm/postprocessing/RenderPass.js';
+import { SSRPass } from 'https://cdn.jsdelivr.net/npm/three@0.160.1/examples/jsm/postprocessing/SSRPass.js';
 import { ShaderPass } from 'three/examples/jsm/postprocessing/ShaderPass.js';
+//import { MeshReflectorMaterial } from 'https://unpkg.com/three@0.155.0/examples/jsm/objects/MeshReflectorMaterial.js';
+//import { EffectComposer, RenderPass, EffectPass, SSRPass} from 'https://cdn.jsdelivr.net/npm/postprocessing@6.30.2/+esm';
 
 // Scene
 //const scene = new THREE.Scene();
@@ -282,34 +283,45 @@ loader.load('model.glb', (gltf) => {
 const composer = new EffectComposer(renderer);
 composer.addPass(new RenderPass(scene, camera));
 
-const ssrEffect = new SSREffect(scene, camera, {
-  intensity: 1,
-  roughnessFade: 1,
-  thickness: 10,
-  maxRoughness: 1,
-  resolutionScale: 1,
-  blur: true,
-  blurKernel: 3,
-  distance: 5,
-  distanceScale: 1,
-});
-const ssrPass = new EffectPass(camera, ssrEffect);
+const reflectiveMesh = scene.getObjectByName('kbBase_Reflect');
+
+const ssrPass = new SSRPass({
+  renderer,
+  scene,
+  camera,
+  width: window.innerWidth,
+  height: window.innerHeight,
+  groundReflector: groundReflector,
+  selects: reflectiveMesh // null You can specify reflective meshes if you want 
+});  
+
+ssrPass.maxDistance = 0.1;
 composer.addPass(ssrPass);
 
-// dat.GUI controls
-const gui = new dat.GUI();
-const ssrFolder = gui.addFolder('SSR Settings');
+// GUI
+gui.add(ssrPass, 'maxDistance', 0, 1).step(0.01).onChange(() => {
+  groundReflector.maxDistance = ssrPass.maxDistance;
+});
 
-ssrFolder.add(ssrEffect, 'intensity', 0, 5).step(0.1);
-ssrFolder.add(ssrEffect, 'roughnessFade', 0, 5).step(0.1);
-ssrFolder.add(ssrEffect, 'thickness', 0, 20).step(0.1);
-ssrFolder.add(ssrEffect, 'maxRoughness', 0, 1).step(0.01);
-ssrFolder.add(ssrEffect, 'distance', 0, 20).step(0.1);
-ssrFolder.add(ssrEffect, 'distanceScale', 0, 5).step(0.1);
-ssrFolder.add(ssrEffect, 'resolutionScale', 0.1, 2).step(0.1);
-ssrFolder.add(ssrEffect, 'blur');
-ssrFolder.add(ssrEffect, 'blurKernel', 1, 8).step(1);
-ssrFolder.open();
+gui.add(ssrPass, 'opacity', 0, 1).step(0.01).onChange(() => {
+  groundReflector.opacity = ssrPass.opacity;
+});
+
+gui.add(ssrPass, 'fresnel', 0, 5).step(0.01).onChange(() => {
+  groundReflector.fresnel = ssrPass.fresnel;
+});
+
+gui.add(ssrPass, 'distanceAttenuation')
+  .name('Distance Attenuation')
+  .onChange(() => {
+    groundReflector.distanceAttenuation = ssrPass.distanceAttenuation;
+  });
+
+gui.add( ssrPass, 'blur' );
+
+gui.add(ssrPass, 'bouncing').name('Enable Bouncing');
+
+
 
 // Animation loop
 function animate() {
