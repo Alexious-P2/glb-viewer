@@ -3,14 +3,13 @@ import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
 import { GUI } from 'https://cdn.jsdelivr.net/npm/lil-gui@0.18/+esm';
 import { RGBELoader } from 'three/examples/jsm/loaders/RGBELoader.js';
-import { EffectComposer, EffectPass, RenderPass } from 'postprocessing';
 import { SSREffect } from 'screen-space-reflections';
-import { Reflector } from 'https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/objects/Reflector.js';
-//import { EffectComposer } from 'three/examples/jsm/postprocessing/EffectComposer.js';
-//import { ReflectorForSSRPass } from 'three/examples/jsm/objects/ReflectorForSSRPass.js';
-//import { RenderPass } from 'three/examples/jsm/postprocessing/RenderPass.js';
 //import { SSRPass } from 'https://cdn.jsdelivr.net/npm/three@0.160.1/examples/jsm/postprocessing/SSRPass.js';
-//import { ShaderPass } from 'three/examples/jsm/postprocessing/ShaderPass.js';
+import { Reflector } from 'https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/objects/Reflector.js';
+import { ReflectorForSSRPass } from 'three/examples/jsm/objects/ReflectorForSSRPass.js';
+import { EffectComposer } from 'three/examples/jsm/postprocessing/EffectComposer.js';
+import { RenderPass } from 'three/examples/jsm/postprocessing/RenderPass.js';
+import { ShaderPass } from 'three/examples/jsm/postprocessing/ShaderPass.js';
 
 // Scene
 //const scene = new THREE.Scene();
@@ -298,6 +297,7 @@ const ssrPass = new EffectPass(camera, ssrEffect);
 composer.addPass(ssrPass);
 
 // dat.GUI controls
+const gui = new dat.GUI();
 const ssrFolder = gui.addFolder('SSR Settings');
 
 ssrFolder.add(ssrEffect, 'intensity', 0, 5).step(0.1);
