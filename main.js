@@ -29,7 +29,7 @@ camera.position.set(2, 2, 5);
 // Renderer
 const renderer = new THREE.WebGLRenderer({ antialias: true });
 renderer.shadowMap.enabled = true;
-renderer.shadowMap.type = THREE.VSMShadowMap; //THREE.PCFSoftShadowMap;
+renderer.shadowMap.type = THREE.PCFSoftShadowMap; //THREE.PCFSoftShadowMap;
 renderer.setSize(window.innerWidth, window.innerHeight);
 renderer.outputEncoding = THREE.sRGBEncoding;
 document.body.appendChild(renderer.domElement);
@@ -102,6 +102,7 @@ dirLightA.shadow.camera.top = 5;
 dirLightA.shadow.camera.bottom = -5;
 //dirLightA.shadow.bias = -0.05; //-.0005
 dirLightA.shadow.normalBias = 0.01; //.02 default //.05 extending // .01 good // Or try 0.01 to reduce jagginess
+dirLightA.shadow.radius = 6;
 
 scene.add(dirLightA);
 const helperA = new THREE.DirectionalLightHelper(dirLightA, 0.3);
