@@ -298,7 +298,6 @@ const ssrPass = new EffectPass(camera, ssrEffect);
 composer.addPass(ssrPass);
 
 // dat.GUI controls
-const gui = new dat.GUI();
 const ssrFolder = gui.addFolder('SSR Settings');
 
 ssrFolder.add(ssrEffect, 'intensity', 0, 5).step(0.1);
