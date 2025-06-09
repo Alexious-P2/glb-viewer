@@ -92,8 +92,8 @@ const lightParams = {
 const dirLightA = new THREE.DirectionalLight(0xffffff, lightParams.intensity);
 dirLightA.castShadow = true;
 
-dirLightA.shadow.mapSize.width = 2048;
-dirLightA.shadow.mapSize.height = 2048;
+dirLightA.shadow.mapSize.width = 4096;
+dirLightA.shadow.mapSize.height = 4096;
 
 dirLightA.shadow.camera.near = 0.1;
 dirLightA.shadow.camera.far = 10;
