@@ -97,10 +97,10 @@ dirLightA.shadow.mapSize.height = 4096;
 
 dirLightA.shadow.camera.near = 0.1;
 dirLightA.shadow.camera.far = 10;
-dirLightA.shadow.camera.left = -5;
-dirLightA.shadow.camera.right = 5;
-dirLightA.shadow.camera.top = 5;
-dirLightA.shadow.camera.bottom = -5;
+dirLightA.shadow.camera.left = -10;
+dirLightA.shadow.camera.right = 10;
+dirLightA.shadow.camera.top = 10;
+dirLightA.shadow.camera.bottom = -10;
 //dirLightA.shadow.bias = -0.05; //-.0005
 dirLightA.shadow.normalBias = 0.005; //.02 default //.05 extending // .01 good // Or try 0.01 to reduce jagginess
 dirLightA.shadow.radius = 10;
@@ -184,6 +184,24 @@ groundFolder.open();
 // Create ground reflector geometry
 const geometry = new THREE.PlaneGeometry(1, 1);
 
+// Load GLB model with shadow
+const loader = new GLTFLoader();
+loader.load('model.glb', (gltf) => {
+  console.log('Model loaded:', gltf);  // ✅ Check this logs something
+
+  // Enable shadows for all meshes in the model
+  gltf.scene.traverse((node) => {
+    if (node.isMesh) {
+      node.castShadow = true;     // Mesh will cast shadows
+      node.receiveShadow = true;  // Optional: receives shadows if needed
+    }
+  });
+
+  scene.add(gltf.scene);
+}, undefined, (error) => {
+  console.error('GLB Load Error:', error);
+});
+
 // Create ReflectorForSSRPass instance
 const groundReflector = new ReflectorForSSRPass(geometry, {
   clipBias: 0.0003,           // fine, small bias to avoid z-fighting
@@ -204,86 +222,6 @@ groundReflector.position.y = 0.001; // slightly above the ground
 groundReflector.visible = false;
 
 scene.add(groundReflector);
-
-/*
-// Default Reflective Plane (slightly above ground to avoid z-fighting)
-const reflector = new Reflector(new THREE.PlaneGeometry(10, 10), {
-  color: new THREE.Color(0x444444),
-  textureWidth: window.innerWidth * window.devicePixelRatio,
-  textureHeight: window.innerHeight * window.devicePixelRatio,
-  clipBias: 0.003
-});
-reflector.rotation.x = -Math.PI / 2;
-reflector.position.y = 0.001; // slightly above the ground
-reflector.material.transparent = true; // Make reflector transparent
-reflector.material.opacity = 0.05; // ← adjust this for the desired blend of reflection vs background
-scene.add(reflector);
-
-// Reflector GUI toggle control
-const sceneFolder = gui.addFolder('Scene Settings');
-sceneFolder.addColor(sceneParams, 'backgroundColor').name('Background').onChange((value) => {
-  scene.background.set(value);
-});
-sceneFolder.add(sceneParams, 'enableReflector').name('Enable Reflector').onChange((enabled) => {
-  reflector.visible = enabled;
-});
-sceneFolder.open();
-
-
-
-/*
-// Reflective ground plane MeshReflectorMaterial
-const groundGeo = new THREE.PlaneGeometry(20, 20);
-const groundMat = new MeshReflectorMaterial({
-  color: 0x111111,
-  metalness: 0.8,
-  roughness: 0.3,
-  blur: [0.02, 0.02],
-  resolution: 512,
-  mixBlur: 0.5,
-  mixStrength: 1,
-  depthScale: 0.01,
-  minDepthThreshold: 0.8,
-  maxDepthThreshold: 1,
-  transparent: true,
-  opacity: 0.6,
-});
-
-const ground = new THREE.Mesh(groundGeo, groundMat);
-ground.rotation.x = -Math.PI / 2;
-ground.position.y = 0.001;
-ground.receiveShadow = true;
-scene.add(ground);
-*/
-
-// Load GLB model
-/*
-const loader = new GLTFLoader();
-loader.load('model.glb', (gltf) => {
-  console.log('Model loaded:', gltf);  // ✅ Check this logs something
-  scene.add(gltf.scene);
-}, undefined, error => {
-  console.error('GLB Load Error:', error);
-});
-*/
-
-// Load GLB model with shadow
-const loader = new GLTFLoader();
-loader.load('model.glb', (gltf) => {
-  console.log('Model loaded:', gltf);  // ✅ Check this logs something
-
-  // Enable shadows for all meshes in the model
-  gltf.scene.traverse((node) => {
-    if (node.isMesh) {
-      node.castShadow = true;     // Mesh will cast shadows
-      node.receiveShadow = true;  // Optional: receives shadows if needed
-    }
-  });
-
-  scene.add(gltf.scene);
-}, undefined, (error) => {
-  console.error('GLB Load Error:', error);
-});
 
 // Postprocessing SSR
 const composer = new EffectComposer(renderer);
@@ -326,8 +264,6 @@ gui.add(ssrPass, 'distanceAttenuation')
 gui.add( ssrPass, 'blur' );
 
 gui.add(ssrPass, 'bouncing').name('Enable Bouncing');
-
-
 
 // Animation loop
 function animate() {
