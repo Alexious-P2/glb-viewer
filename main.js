@@ -88,17 +88,31 @@ gui.add(envSettings, 'intensity', 0, 5, 0.1).name('HDRI Intensity').onChange(() 
 */
 
 // Load HDRI for realistic environment with Rotation
-let envMapRotation = 0;
-const rgbeLoader = new RGBELoader();
-rgbeLoader.load('hdri/lightroom_14b_low.hdr', function (texture) {
+let envMapMesh;
+
+rgbeLoader.load('hdri/lightroom_14b_low.hdr', (texture) => {
   texture.mapping = THREE.EquirectangularReflectionMapping;
-  scene.environment = texture;
 
-  // Hide HDRI from background
-  scene.background = null;
+  const pmremGenerator = new THREE.PMREMGenerator(renderer);
+  const envMap = pmremGenerator.fromEquirectangular(texture).texture;
 
-  // Save original texture for rotation
-  originalEnvMap = texture;
+  scene.environment = envMap;
+  scene.background = null; // Keep background transparent
+
+  // HDRI Sphere to rotate the lighting (not visible)
+  const shader = THREE.ShaderLib['cube'];
+  const material = new THREE.ShaderMaterial({
+    uniforms: THREE.UniformsUtils.clone(shader.uniforms),
+    vertexShader: shader.vertexShader,
+    fragmentShader: shader.fragmentShader,
+    depthWrite: false,
+    side: THREE.BackSide
+  });
+
+  material.uniforms.tCube.value = envMap;
+
+  envMapMesh = new THREE.Mesh(new THREE.BoxGeometry(10, 10, 10), material);
+  scene.add(envMapMesh);
 });
 
 // HDR GUI for rotation
@@ -336,8 +350,8 @@ function animate() {
   requestAnimationFrame(animate);
   controls.update();
   //renderer.render(scene, camera);
-  if (originalEnvMap) {
-    scene.environment = rotateEnvMap(originalEnvMap, envMapRotation);
+  if (envMapMesh) {
+    envMapMesh.rotation.y = envMapRotation; // This controls HDRI lighting rotation
   }
   composer.render();
 }
