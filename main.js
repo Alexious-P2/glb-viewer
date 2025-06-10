@@ -153,7 +153,6 @@ const ambientFolder = gui.addFolder('Ambient Light');
 ambientFolder.add(ambientLight, 'intensity', 0, 2, 0.01).name('Intensity');
 ambientFolder.open();
 
-/*
 // Ground Plane Default
 const groundGeo = new THREE.PlaneGeometry(20, 20);
 const groundMat = new THREE.ShadowMaterial({ opacity: 0.3 });
@@ -163,24 +162,8 @@ ground.rotation.x = -Math.PI / 2;
 ground.position.y = 0;
 ground.receiveShadow = true;
 scene.add(ground);
-*/
 
-// Reflective ground material to blend with soft shadows
-const groundGeo = new THREE.PlaneGeometry(20, 20);
-const groundMat = new THREE.MeshStandardMaterial({
-  color: 0x777777,
-  roughness: 1,
-  metalness: 0.05,
-  opacity: 0.3,
-  transparent: true 
-});
-groundMat.shadowSide = THREE.BackSide;
-const ground = new THREE.Mesh(groundGeo, groundMat);
-ground.rotation.x = -Math.PI / 2;
-ground.receiveShadow = true;
-scene.add(ground);
-
-// GUI Setup
+// GUI Setup for shadow
 const groundFolder = gui.addFolder('Ground Shadow');
 
 const groundSettings = {
