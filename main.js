@@ -58,7 +58,6 @@ sceneFolder.addColor(sceneParams, 'backgroundColor')
 
 sceneFolder.open();
 
-
 // Load HDRI for lighting and reflections
 const hdriPath = 'hdri/lightroom_14b_low.hdr'; // Make sure the file is in your GitHub repo
 const rgbeLoader = new RGBELoader();
@@ -233,10 +232,7 @@ scene.add(groundReflector);
 const composer = new EffectComposer(renderer);
 composer.addPass(new RenderPass(scene, camera));
 
-const mesh1 = scene.getObjectByName('kbBase_Reflect');
-const mesh2 = scene.getObjectByName('groundReflector');
-
-const reflectiveMeshes = [mesh1, mesh2].filter(Boolean); // filters out null if not found
+const reflectiveMesh = scene.getObjectByName('kbButton_Reflect');
 
 const ssrPass = new SSRPass({
   renderer,
@@ -245,7 +241,7 @@ const ssrPass = new SSRPass({
   width: window.innerWidth,
   height: window.innerHeight,
   groundReflector: groundReflector,
-  selects: [reflectiveMeshes] // null You can specify reflective meshes if you want 
+  selects: [reflectiveMesh] // null You can specify reflective meshes if you want 
 });  
 
 ssrPass.maxDistance = 0.1;
