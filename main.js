@@ -112,34 +112,12 @@ rgbeLoader.load('hdri/lightroom_14b_high.hdr', (hdrTexture) => {
   scene.add(envMapMesh);
 });
 
-// HDR GUI for rotation
-const settings = { envRotation: 0 };
-gui.add(settings, 'envRotation', 0, 360).onChange((v) => {
+// GUI for HDRI Rotation
+const gui = new GUI();
+const settings = { envRotationDeg: 0 };
+gui.add(settings, 'envRotationDeg', 0, 360).onChange((v) => {
   envMapRotation = THREE.MathUtils.degToRad(v);
 });
-
-// Custom shader to rotate environment map
-let originalEnvMap = null;
-renderer.compile(scene, camera); // Force material compilation for shaders
-
-function rotateEnvMap(envMap, rotation) {
-  if (!envMap) return envMap;
-
-  // Use a PMREMGenerator to maintain quality
-  const pmremGenerator = new THREE.PMREMGenerator(renderer);
-  const sceneCam = new THREE.Scene();
-  const cubeCam = new THREE.CubeCamera(0.1, 1000, 256);
-
-  const sphere = new THREE.Mesh(
-    new THREE.SphereGeometry(5, 32, 32),
-    new THREE.MeshBasicMaterial({ envMap })
-  );
-  sphere.rotation.y = rotation;
-  sceneCam.add(sphere);
-
-  cubeCam.update(renderer, sceneCam);
-  return cubeCam.renderTarget.texture;
-}
 
 // Lights
 const lightParams = {
