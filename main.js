@@ -181,7 +181,7 @@ groundFolder.add(groundSettings, 'shadowOpacity', 0, 1).step(0.01).name('Shadow 
 
 groundFolder.add(dirLightA.shadow, 'radius', 0, 20).step(0.1).name('Blur Radius');
 groundFolder.add(dirLightA.shadow, 'normalBias', 0, 0.2).step(0.001).name('Normal Bias');
-groundFolder.add(dirLightA.shadow, 'bias', 0, -0.2).step(0.001).name('Shadow Bias');
+groundFolder.add(dirLightA.shadow, 'bias', -0.2, -.2).step(0.001).name('Shadow Bias');
 
 groundFolder.open();
 
