@@ -95,7 +95,7 @@ const rgbeLoader = new RGBELoader();
 const pmremGenerator = new THREE.PMREMGenerator(renderer);
 pmremGenerator.compileEquirectangularShader();
 
-rgbeLoader.load('./hdr/your_hdri.hdr', (hdrTexture) => {
+rgbeLoader.load('hdri/lightroom_14b_high.hdr', (hdrTexture) => {
   hdrTexture.mapping = THREE.EquirectangularReflectionMapping;
 
   const envMap = pmremGenerator.fromEquirectangular(hdrTexture).texture;
