@@ -101,7 +101,7 @@ rgbeLoader.load('hdri/lightroom_14b_high.hdr', (hdrTexture) => {
   const envMap = pmremGenerator.fromEquirectangular(hdrTexture).texture;
 
   scene.environment = envMap;
-  scene.background = null; // Optional: set to envMap if you want visible HDRI
+  scene.background = envMap; // Optional: set to envMap if you want visible HDRI
 
   // Build fake cube skybox for rotation
   const material = new THREE.MeshBasicMaterial({
