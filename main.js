@@ -112,7 +112,7 @@ new RGBELoader().load('hdri/lightroom_14b_low.hdr', (hdrMap) => {
   scene.add(skyMesh);
 
   const envSettings = {
-    hdriIntensity: 1,
+    hdriIntensity: 5,
     hdriRotation: 0
   };
 
