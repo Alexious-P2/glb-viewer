@@ -92,7 +92,7 @@ gui.add(envSettings, 'intensity', 0, 5, 0.1).name('HDRI Intensity').onChange(() 
 let hdriRotation = 0;
 let hdriIntensity = 1;
 
-new RGBELoader().load('textures/studio_small_09.hdr', (hdrMap) => {
+new RGBELoader().load('hdri/lightroom_14b_low.hdr', (hdrMap) => {
   hdrMap.mapping = THREE.EquirectangularReflectionMapping;
 
   const pmrem = new THREE.PMREMGenerator(renderer);
