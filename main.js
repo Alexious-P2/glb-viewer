@@ -208,7 +208,7 @@ loader.load('model.glb', (gltf) => {
 
 // Create ReflectorForSSRPass instance
 const groundReflector = new ReflectorForSSRPass(geometry, {
-  clipBias: 0.0003,           // fine, small bias to avoid z-fighting
+  clipBias: 0.0001,           // fine, small bias to avoid z-fighting
   textureWidth: window.innerWidth,
   textureHeight: window.innerHeight,
   color: 0x888888,
@@ -220,7 +220,7 @@ groundReflector.material.depthWrite = false;
 
 // Rotate to horizontal plane
 groundReflector.rotation.x = -Math.PI / 2;
-groundReflector.position.y = 0.001; // slightly above the ground
+groundReflector.position.y = 0.0001; // slightly above the ground
 
 // Currently invisible - usually to avoid double rendering reflections in SSR pass
 groundReflector.visible = false;
