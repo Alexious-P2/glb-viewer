@@ -59,6 +59,7 @@ sceneFolder.addColor(sceneParams, 'backgroundColor')
 
 sceneFolder.open();
 
+/*
 // Load HDRI for lighting and reflections
 const hdriPath = 'hdri/lightroom_14b_low.hdr'; // Make sure the file is in your GitHub repo
 const rgbeLoader = new RGBELoader();
@@ -85,35 +86,40 @@ gui.add(envSettings, 'intensity', 0, 5, 0.1).name('HDRI Intensity').onChange(() 
     }
   });
 });
+*/
 
-/*
 // Load HDRI for realistic environment and GI lighting
 let hdriRotation = 0;
 let hdriIntensity = 1;
 
-new RGBELoader().load('hdri/lightroom_14b_low.hdr', (hdrMap) => {
+new RGBELoader().load('textures/studio_small_09.hdr', (hdrMap) => {
   hdrMap.mapping = THREE.EquirectangularReflectionMapping;
-  scene.environment = hdrMap;
-  scene.background = null; // ← HDRI not visible in background
-  const lightProbe = LightProbeGenerator.fromCubeTexture(hdrMap);
+
+  const pmrem = new THREE.PMREMGenerator(renderer);
+  pmrem.compileEquirectangularShader();
+  const envMap = pmrem.fromEquirectangular(hdrMap).texture;
+
+  scene.environment = envMap;
+
+  const lightProbe = LightProbeGenerator.fromEquirectangularTexture(renderer, hdrMap);
   scene.add(lightProbe);
 
-  // Save reference for GUI-controlled rotation
-  const envMap = hdrMap;
-  envMap.center = new THREE.Vector2(0.5, 0.5);
-  envMap.rotation = hdriRotation;
+  const envSettings = {
+    hdriIntensity: 1,
+    hdriRotation: 0
+  };
 
-  const envSettings = { hdriRotation: 0, hdriIntensity: 1 };
-  gui.add(envSettings, 'hdriRotation', 0, Math.PI * 2).step(0.01).name('HDRI Rotation').onChange(value => {
-    hdriRotation = value;
-    envMap.rotation = hdriRotation;
-  });
   gui.add(envSettings, 'hdriIntensity', 0, 5).step(0.1).name('HDRI Intensity').onChange(value => {
     hdriIntensity = value;
     renderer.toneMappingExposure = hdriIntensity;
   });
+
+  gui.add(envSettings, 'hdriRotation', 0, Math.PI * 2).step(0.01).name('HDRI Rotation').onChange(value => {
+    hdriRotation = value;
+    scene.environment.mapping = THREE.EquirectangularReflectionMapping;
+    scene.environment.rotation = hdriRotation; // not native to texture, rotate geometry
+  });
 });
-*/
   
 
 // Lights
