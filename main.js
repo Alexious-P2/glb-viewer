@@ -87,45 +87,38 @@ gui.add(envSettings, 'intensity', 0, 5, 0.1).name('HDRI Intensity').onChange(() 
 });
 */
 
-// Load HDRI for realistic environment with Rotation
-let cubeCamera, dynamicEnvMap;
+// Setup HDRI rotation system
+let envMapRotation = 0;
+let envSphere, cubeCamera, dynamicEnvMap;
 
-new RGBELoader()
-  .setPath('hdri')
-  .load('lightroom_14b_high.hdr', (hdrTexture) => {
-    hdrTexture.mapping = THREE.EquirectangularReflectionMapping;
+const rgbeLoader = new RGBELoader();
 
-    const envScene = new THREE.Scene();
-    const envSphere = new THREE.Mesh(
-      new THREE.SphereGeometry(50, 32, 32),
-      new THREE.MeshBasicMaterial({ map: hdrTexture, side: THREE.BackSide })
-    );
-    envScene.add(envSphere);
+rgbeLoader.load('hdri/lightroom_14b_high.hdr', (hdrTexture) => {
+  hdrTexture.mapping = THREE.EquirectangularReflectionMapping;
 
-    cubeCamera = new THREE.CubeCamera(0.1, 100, 256);
-    cubeCamera.update(renderer, envScene);
+  // Create a surrounding sphere with HDR texture applied
+  envSphere = new THREE.Mesh(
+    new THREE.SphereGeometry(50, 32, 32),
+    new THREE.MeshBasicMaterial({
+      map: hdrTexture,
+      side: THREE.BackSide
+    })
+  );
 
-    dynamicEnvMap = cubeCamera.renderTarget.texture;
-    scene.environment = dynamicEnvMap;
+  // Add sphere to a separate scene for rendering cube map
+  const envScene = new THREE.Scene();
+  envScene.add(envSphere);
 
-    // Store envSphere so we can rotate it
-    window.envSphere = envSphere;
+  // Create CubeCamera to generate dynamic environment map
+  cubeCamera = new THREE.CubeCamera(0.1, 100, 256);
+  cubeCamera.update(renderer, envScene);
 
-    // Test mesh
-    const sphere = new THREE.Mesh(
-      new THREE.SphereGeometry(1, 64, 64),
-      new THREE.MeshStandardMaterial({
-        color: 0xffffff,
-        roughness: 0.1,
-        metalness: 1,
-        envMapIntensity: 1
-      })
-    );
-    sphere.position.y = 1;
-    scene.add(sphere);
-  });
+  dynamicEnvMap = cubeCamera.renderTarget.texture;
+  scene.environment = dynamicEnvMap;
+});
 
 // GUI for HDRI Rotation
+const settings = { envRotation: 0 };
 gui.add(settings, 'envRotation', 0, 360).onChange((v) => {
   envMapRotation = THREE.MathUtils.degToRad(v);
 });
@@ -335,9 +328,9 @@ function animate() {
   controls.update();
   //renderer.render(scene, camera);
   if (envSphere && cubeCamera) {
-  envSphere.rotation.y = envMapRotation;
-  cubeCamera.update(renderer, envSphere.parent);
-}
+    envSphere.rotation.y = envMapRotation;
+    cubeCamera.update(renderer, envSphere.parent); // Refresh env map
+  }
   composer.render();
 }
 animate();
