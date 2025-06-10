@@ -234,6 +234,7 @@ const ssrPass = new SSRPass({
 });  
 
 ssrPass.maxDistance = 0.1;
+ssrPass.blur = true;
 composer.addPass(ssrPass);
 
 // GUI
@@ -256,6 +257,19 @@ gui.add(ssrPass, 'distanceAttenuation')
   });
 
 gui.add( ssrPass, 'blur' );
+// Blur passes
+const hBlur = new ShaderPass(HorizontalBlurShader);
+const vBlur = new ShaderPass(VerticalBlurShader);
+hBlur.uniforms.h.value = 1 / window.innerWidth;
+vBlur.uniforms.v.value = 1 / window.innerHeight;
+
+composer.addPass(hBlur);
+composer.addPass(vBlur);
+
+// GUI for blur strength
+gui.add(hBlur.uniforms.h, 'value', 0.0, 0.01).step(0.0005).name('Horizontal Blur');
+gui.add(vBlur.uniforms.v, 'value', 0.0, 0.01).step(0.0005).name('Vertical Blur');
+
 
 gui.add(ssrPass, 'bouncing').name('Enable Bouncing');
 
