@@ -113,7 +113,6 @@ rgbeLoader.load('hdri/lightroom_14b_high.hdr', (hdrTexture) => {
 });
 
 // GUI for HDRI Rotation
-const gui = new GUI();
 const settings = { envRotationDeg: 0 };
 gui.add(settings, 'envRotationDeg', 0, 360).onChange((v) => {
   envMapRotation = THREE.MathUtils.degToRad(v);
