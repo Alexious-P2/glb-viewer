@@ -91,8 +91,8 @@ gui.add(envSettings, 'intensity', 0, 5, 0.1).name('HDRI Intensity').onChange(() 
 let cubeCamera, dynamicEnvMap;
 
 new RGBELoader()
-  .setPath('./hdr/')
-  .load('studio_small_03_1k.hdr', (hdrTexture) => {
+  .setPath('hdri')
+  .load('lightroom_14b_high.hdr', (hdrTexture) => {
     hdrTexture.mapping = THREE.EquirectangularReflectionMapping;
 
     const envScene = new THREE.Scene();
