@@ -10,7 +10,6 @@ import { RenderPass } from 'three/examples/jsm/postprocessing/RenderPass.js';
 import { SSRPass } from 'https://cdn.jsdelivr.net/npm/three@0.160.1/examples/jsm/postprocessing/SSRPass.js';
 import { ShaderPass } from 'three/examples/jsm/postprocessing/ShaderPass.js';
 import { SSAOPass } from 'three/examples/jsm/postprocessing/SSAOPass.js';
-import { LightProbeGenerator } from 'three/examples/jsm/lights/LightProbeGenerator.js';
 //import { MeshReflectorMaterial } from 'https://unpkg.com/three@0.155.0/examples/jsm/objects/MeshReflectorMaterial.js';
 //import { EffectComposer, RenderPass, EffectPass, SSRPass} from 'https://cdn.jsdelivr.net/npm/postprocessing@6.30.2/+esm';
 
@@ -89,9 +88,10 @@ gui.add(envSettings, 'intensity', 0, 5, 0.1).name('HDRI Intensity').onChange(() 
 */
 
 // Load HDRI for realistic environment and GI lighting
-let hdriRotation = 0;
-let hdriIntensity = 1;
 
+hdriIntensity: 1,
+hdriRotation: 0
+	
 new RGBELoader().load('hdri/lightroom_14b_low.hdr', (hdrMap) => {
   hdrMap.mapping = THREE.EquirectangularReflectionMapping;
 
@@ -101,8 +101,9 @@ new RGBELoader().load('hdri/lightroom_14b_low.hdr', (hdrMap) => {
 
   scene.environment = envMap;
 
-  const lightProbe = LightProbeGenerator.fromEquirectangularTexture(renderer, hdrMap);
-  scene.add(lightProbe);
+  // Optional: simulate ambient light probe
+  // const lightProbe = LightProbeGenerator.fromCubeTexture(envMap);
+  // scene.add(lightProbe);
 
   const envSettings = {
     hdriIntensity: 1,
@@ -116,10 +117,11 @@ new RGBELoader().load('hdri/lightroom_14b_low.hdr', (hdrMap) => {
 
   gui.add(envSettings, 'hdriRotation', 0, Math.PI * 2).step(0.01).name('HDRI Rotation').onChange(value => {
     hdriRotation = value;
-    scene.environment.mapping = THREE.EquirectangularReflectionMapping;
-    scene.environment.rotation = hdriRotation; // not native to texture, rotate geometry
+    // Note: Cannot rotate scene.environment directly
+    // Instead, rotate directional light or rotate skydome (if used)
   });
 });
+
   
 
 // Lights
