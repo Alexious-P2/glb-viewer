@@ -91,15 +91,17 @@ gui.add(envSettings, 'intensity', 0, 5, 0.1).name('HDRI Intensity').onChange(() 
 let envMapMesh;
 let envMapRotation = 0;
 
-new RGBELoader()
-  .setPath('./hdr/')
-  .load('hdri/lightroom_14b_high.hdr', (hdrTexture) => {
-    const envMap = pmremGenerator.fromEquirectangular(hdrTexture).texture;
-    scene.environment = envMap;
-    scene.background = null; // Set to envMap to show background
+const rgbeLoader = new RGBELoader();
+const pmremGenerator = new THREE.PMREMGenerator(renderer);
+pmremGenerator.compileEquirectangularShader();
 
-    hdrTexture.dispose();
-    pmremGenerator.dispose();
+rgbeLoader.load('./hdr/your_hdri.hdr', (hdrTexture) => {
+  const envMap = pmremGenerator.fromEquirectangular(hdrTexture).texture;
+  hdrTexture.dispose();
+  pmremGenerator.dispose();
+
+  scene.environment = envMap;
+  scene.background = null; // Set to envMap if you want visible HDRI
 
     // Create rotatable skybox
     envMapMesh = new THREE.Mesh(
