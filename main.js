@@ -88,38 +88,36 @@ gui.add(envSettings, 'intensity', 0, 5, 0.1).name('HDRI Intensity').onChange(() 
 */
 
 // Setup HDRI rotation system
+let envSphere, envScene, cubeCamera, dynamicEnvMap;
 let envMapRotation = 0;
-let envSphere, cubeCamera, dynamicEnvMap;
 
 const rgbeLoader = new RGBELoader();
 
 rgbeLoader.load('hdri/lightroom_14b_high.hdr', (hdrTexture) => {
   hdrTexture.mapping = THREE.EquirectangularReflectionMapping;
 
-  // Create a surrounding sphere with HDR texture applied
+  // 1) Create sphere with HDR texture
   envSphere = new THREE.Mesh(
     new THREE.SphereGeometry(50, 32, 32),
-    new THREE.MeshBasicMaterial({
-      map: hdrTexture,
-      side: THREE.BackSide
-    })
+    new THREE.MeshBasicMaterial({ map: hdrTexture, side: THREE.BackSide })
   );
 
-  // Add sphere to a separate scene for rendering cube map
-  const envScene = new THREE.Scene();
+  // 2) Put it into its own scene for cube renders
+  envScene = new THREE.Scene();
   envScene.add(envSphere);
 
-  // Create CubeCamera to generate dynamic environment map
+  // 3) Make the CubeCamera
   cubeCamera = new THREE.CubeCamera(0.1, 100, 256);
   cubeCamera.update(renderer, envScene);
 
+  // 4) Use its renderTarget as your dynamic envMap
   dynamicEnvMap = cubeCamera.renderTarget.texture;
   scene.environment = dynamicEnvMap;
 });
 
 // GUI for HDRI Rotation
 const settings = { envRotation: 0 };
-gui.add(settings, 'envRotation', 0, 360).onChange((v) => {
+gui.add(settings, 'envRotation', 0, 360).onChange(v => {
   envMapRotation = THREE.MathUtils.degToRad(v);
 });
 
@@ -327,9 +325,14 @@ function animate() {
   requestAnimationFrame(animate);
   controls.update();
   //renderer.render(scene, camera);
-  if (envSphere && cubeCamera) {
+  if (envSphere && envScene && cubeCamera) {
+    // Rotate your HDR sphere
     envSphere.rotation.y = envMapRotation;
-    cubeCamera.update(renderer, envSphere.parent); // Refresh env map
+
+    // Re-render the cube camera from the *envScene*
+    cubeCamera.update(renderer, envScene);
+
+    // scene.environment already points at cubeCamera.renderTarget.texture
   }
   composer.render();
 }
