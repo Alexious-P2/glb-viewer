@@ -181,7 +181,9 @@ const geometry = new THREE.PlaneGeometry(1, 1);
 // Load GLB model with shadow
 const loader = new GLTFLoader();
 loader.load('model.glb', (gltf) => {
-  console.log('Model loaded:', gltf);  // ✅ Check this logs something
+  console.log('Model loaded:', gltf);  // ✅ Confirm model is loaded
+
+  const model = gltf.scene;
 
   // Traverse all meshes
   model.traverse((child) => {
@@ -189,7 +191,7 @@ loader.load('model.glb', (gltf) => {
       child.castShadow = true; // All meshes can cast if needed
 
       if (child.name === 'shadow') {
-        // ✅ This mesh receives shadow with transparent shadow material
+        // ✅ Shadow-receiving mesh with transparent shadow material
         child.receiveShadow = true;
         child.material = new THREE.ShadowMaterial({ opacity: 0.4 });
       } else {
@@ -198,9 +200,8 @@ loader.load('model.glb', (gltf) => {
       }
     }
   });
-});
 
-  scene.add(gltf.scene);
+  scene.add(model); // ✅ Add to scene inside success callback
 }, undefined, (error) => {
   console.error('GLB Load Error:', error);
 });
