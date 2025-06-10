@@ -35,85 +35,9 @@ renderer.setSize(window.innerWidth, window.innerHeight);
 renderer.outputEncoding = THREE.sRGBEncoding;
 document.body.appendChild(renderer.domElement);
 
-// Inject PCSS shadow code
-THREE.ShaderChunk.shadowmap_pars_fragment = THREE.ShaderChunk.shadowmap_pars_fragment
-  .replace(
-    `#ifdef USE_SHADOWMAP`,
-    `#ifdef USE_SHADOWMAP
-    #define LIGHT_WORLD_SIZE 0.005
-    #define LIGHT_FRUSTUM_WIDTH 3.75
-    #define LIGHT_SIZE_UV (LIGHT_WORLD_SIZE / LIGHT_FRUSTUM_WIDTH)
-    #define NEAR_PLANE 1.0
-    #define NUM_SAMPLES 17
-    #define NUM_RINGS 11
-
-    float penumbraSize = 0.0;
-
-    float rand_2(vec2 uv) {
-      vec2 g = fract(uv * vec2(123.34, 345.45));
-      g += dot(g, g + 34.345);
-      return fract(g.x * g.y);
-    }
-
-    vec2 poissonDisk[NUM_SAMPLES];
-
-    void initPoissonSamples(const in vec2 randomSeed) {
-      float ANGLE_STEP = PI2 * float(NUM_RINGS) / float(NUM_SAMPLES);
-      float INV_NUM_SAMPLES = 1.0 / float(NUM_SAMPLES);
-      float radius = INV_NUM_SAMPLES;
-      float angle = rand_2(randomSeed) * PI2;
-
-      for (int i = 0; i < NUM_SAMPLES; i++) {
-        poissonDisk[i] = vec2(cos(angle), sin(angle)) * pow(radius, 0.75);
-        radius += INV_NUM_SAMPLES;
-        angle += ANGLE_STEP;
-      }
-    }
-
-    float PCSS(sampler2D shadowMap, vec4 coords) {
-      vec3 projCoords = coords.xyz / coords.w;
-      vec2 uv = projCoords.xy;
-      float currentDepth = projCoords.z;
-
-      vec2 texelSize = vec2(1.0 / 2048.0); // same as shadow map resolution
-      float avgBlockerDepth = 0.0;
-      int blockerCount = 0;
-
-      initPoissonSamples(uv);
-
-      for (int i = 0; i < NUM_SAMPLES; i++) {
-        float sampleDepth = unpackRGBAToDepth(texture2D(shadowMap, uv + poissonDisk[i] * LIGHT_SIZE_UV));
-        if (sampleDepth < currentDepth) {
-          avgBlockerDepth += sampleDepth;
-          blockerCount++;
-        }
-      }
-
-      if (blockerCount == 0) return 1.0;
-
-      avgBlockerDepth /= float(blockerCount);
-      penumbraSize = (currentDepth - avgBlockerDepth) / avgBlockerDepth;
-      float shadow = 0.0;
-
-      for (int i = 0; i < NUM_SAMPLES; i++) {
-        float sampleDepth = unpackRGBAToDepth(texture2D(shadowMap, uv + poissonDisk[i] * penumbraSize * LIGHT_SIZE_UV));
-        if (sampleDepth < currentDepth) shadow += 1.0;
-      }
-
-      return shadow / float(NUM_SAMPLES);
-    }`
-  );
-
-THREE.ShaderChunk.shadowmap_fragment = THREE.ShaderChunk.shadowmap_fragment
-  .replace(
-    `#if defined( SHADOWMAP_TYPE_PCF )`,
-    `#if defined( SHADOWMAP_TYPE_PCF )
-    shadow = PCSS( shadowMap[ i ], shadowCoord[ i ] );`
-  );
-
 // Enable VSM Soft Shadows
 renderer.shadowMap.enabled = true;
-renderer.shadowMap.type = THREE.PCFSoftShadowMap; //THREE.PCFSoftShadowMap; THREE.VSMShadowMap;
+renderer.shadowMap.type = THREE.VSMShadowMap; //THREE.PCFSoftShadowMap;
 renderer.toneMapping = THREE.ACESFilmicToneMapping;
 renderer.toneMappingExposure = 1.0;
 
