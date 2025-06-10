@@ -87,45 +87,50 @@ gui.add(envSettings, 'intensity', 0, 5, 0.1).name('HDRI Intensity').onChange(() 
 });
 */
 
-// Load HDRI for realistic environment and GI lighting
+// Load HDRI for realistic environment with Rotation
+let envMapRotation = 0;
+const rgbeLoader = new RGBELoader();
+rgbeLoader.load('hdri/lightroom_14b_low.hdr', function (texture) {
+  texture.mapping = THREE.EquirectangularReflectionMapping;
+  scene.environment = texture;
 
-let hdriRotation = 0;
-let hdriIntensity = 1;
-let skyMesh = null;
+  // Hide HDRI from background
+  scene.background = null;
 
-new RGBELoader().load('hdri/lightroom_14b_low.hdr', (hdrMap) => {
-  hdrMap.mapping = THREE.EquirectangularReflectionMapping;
-
-  const pmrem = new THREE.PMREMGenerator(renderer);
-  pmrem.compileEquirectangularShader();
-  const envMap = pmrem.fromEquirectangular(hdrMap).texture;
-
-  scene.environment = envMap;
-
-  // Sky dome for visible HDRI background and rotation
-  const skyGeo = new THREE.SphereGeometry(50, 60, 40);
-  const skyMat = new THREE.MeshBasicMaterial({
-    map: hdrMap,
-    side: THREE.BackSide
-  });
-  skyMesh = new THREE.Mesh(skyGeo, skyMat);
-  scene.add(skyMesh);
-
-  const envSettings = {
-    hdriIntensity: 5,
-    hdriRotation: 0
-  };
-
-  gui.add(envSettings, 'hdriIntensity', 0, 5).step(0.1).name('HDRI Intensity').onChange(value => {
-    hdriIntensity = value;
-    renderer.toneMappingExposure = hdriIntensity;
-  });
-
-  gui.add(envSettings, 'hdriRotation', 0, Math.PI * 2).step(0.01).name('HDRI Rotation').onChange(value => {
-    hdriRotation = value;
-    if (skyMesh) skyMesh.rotation.y = hdriRotation;
-  });
+  // Save original texture for rotation
+  originalEnvMap = texture;
 });
+
+// HDR GUI for rotation
+const settings = {
+  envRotation: 0
+};
+gui.add(settings, 'envRotation', 0, 360).onChange((v) => {
+  envMapRotation = THREE.MathUtils.degToRad(v);
+});
+
+// Custom shader to rotate environment map
+let originalEnvMap = null;
+renderer.compile(scene, camera); // Force material compilation for shaders
+
+function rotateEnvMap(envMap, rotation) {
+  if (!envMap) return envMap;
+
+  // Use a PMREMGenerator to maintain quality
+  const pmremGenerator = new THREE.PMREMGenerator(renderer);
+  const sceneCam = new THREE.Scene();
+  const cubeCam = new THREE.CubeCamera(0.1, 1000, 256);
+
+  const sphere = new THREE.Mesh(
+    new THREE.SphereGeometry(5, 32, 32),
+    new THREE.MeshBasicMaterial({ envMap })
+  );
+  sphere.rotation.y = rotation;
+  sceneCam.add(sphere);
+
+  cubeCam.update(renderer, sceneCam);
+  return cubeCam.renderTarget.texture;
+}
 
 // Lights
 const lightParams = {
@@ -331,6 +336,9 @@ function animate() {
   requestAnimationFrame(animate);
   controls.update();
   //renderer.render(scene, camera);
+  if (originalEnvMap) {
+    scene.environment = rotateEnvMap(originalEnvMap, envMapRotation);
+  }
   composer.render();
 }
 animate();
