@@ -88,33 +88,42 @@ gui.add(envSettings, 'intensity', 0, 5, 0.1).name('HDRI Intensity').onChange(() 
 */
 
 // Load HDRI for realistic environment with Rotation
-let envMapMesh, envMapRotation = 0;
+let envMapMesh;
+let envMapRotation = 0;
 
-const rgbeLoader = new RGBELoader();
-const pmremGenerator = new THREE.PMREMGenerator(renderer);
-pmremGenerator.compileEquirectangularShader();
+new RGBELoader()
+  .setPath('./hdr/')
+  .load('hdri/lightroom_14b_high.hdr', (hdrTexture) => {
+    const envMap = pmremGenerator.fromEquirectangular(hdrTexture).texture;
+    scene.environment = envMap;
+    scene.background = null; // Set to envMap to show background
 
-rgbeLoader.load('hdri/lightroom_14b_high.hdr', (hdrTexture) => {
-  const envMap = pmremGenerator.fromEquirectangular(hdrTexture).texture;
-  hdrTexture.dispose();
-  pmremGenerator.dispose();
+    hdrTexture.dispose();
+    pmremGenerator.dispose();
 
-  scene.environment = envMap;
-  scene.background = null;
+    // Create rotatable skybox
+    envMapMesh = new THREE.Mesh(
+      new THREE.BoxGeometry(50, 50, 50),
+      new THREE.MeshBasicMaterial({ envMap, side: THREE.BackSide })
+    );
+    scene.add(envMapMesh);
 
-  // Create invisible skybox for lighting rotation
-  const material = new THREE.MeshBasicMaterial({
-    envMap: envMap,
-    side: THREE.BackSide
+    // Add test material
+    const material = new THREE.MeshStandardMaterial({
+      color: 0xffffff,
+      roughness: 0.2,
+      metalness: 1,
+      envMapIntensity: 1.2
+    });
+
+    const sphere = new THREE.Mesh(new THREE.SphereGeometry(1, 64, 64), material);
+    sphere.position.y = 1;
+    scene.add(sphere);
   });
 
-  envMapMesh = new THREE.Mesh(new THREE.BoxGeometry(50, 50, 50), material);
-  scene.add(envMapMesh);
-});
-
 // GUI for HDRI Rotation
-const settings = { envRotationDeg: 0 };
-gui.add(settings, 'envRotationDeg', 0, 360).onChange((v) => {
+const settings = { envRotation: 0 };
+gui.add(settings, 'envRotation', 0, 360).onChange((v) => {
   envMapRotation = THREE.MathUtils.degToRad(v);
 });
 
