@@ -88,29 +88,31 @@ gui.add(envSettings, 'intensity', 0, 5, 0.1).name('HDRI Intensity').onChange(() 
 */
 
 // Load HDRI for realistic environment with Rotation
+let envMapRotation = 0;
+let envMapMesh;
+
 const rgbeLoader = new RGBELoader();
 const pmremGenerator = new THREE.PMREMGenerator(renderer);
+pmremGenerator.compileEquirectangularShader();
 
-let envMapMesh, envMap;
-rgbeLoader.load('hdri/lightroom_14b_low.hdr', (texture) => {
-  texture.mapping = THREE.EquirectangularReflectionMapping;
-  envMap = pmremGenerator.fromEquirectangular(texture).texture;
+rgbeLoader.load('./hdr/your_hdri.hdr', (hdrTexture) => {
+  hdrTexture.mapping = THREE.EquirectangularReflectionMapping;
+
+  const envMap = pmremGenerator.fromEquirectangular(hdrTexture).texture;
 
   scene.environment = envMap;
-  scene.background = null;
+  scene.background = null; // Optional: set to envMap if you want visible HDRI
 
-  const shader = THREE.ShaderLib['cube'];
-  const material = new THREE.ShaderMaterial({
-    uniforms: THREE.UniformsUtils.clone(shader.uniforms),
-    vertexShader: shader.vertexShader,
-    fragmentShader: shader.fragmentShader,
-    depthWrite: false,
+  // Build fake cube skybox for rotation
+  const material = new THREE.MeshBasicMaterial({
+    envMap: envMap,
     side: THREE.BackSide
   });
 
-  material.uniforms.tCube.value = envMap;
-
-  envMapMesh = new THREE.Mesh(new THREE.BoxGeometry(50, 50, 50), material);
+  envMapMesh = new THREE.Mesh(
+    new THREE.BoxGeometry(100, 100, 100),
+    material
+  );
   scene.add(envMapMesh);
 });
 
@@ -350,7 +352,7 @@ function animate() {
   controls.update();
   //renderer.render(scene, camera);
   if (envMapMesh) {
-    envMapMesh.rotation.y = envMapRotation; // No error now
+    envMapMesh.rotation.y = envMapRotation;
   }
   composer.render();
 }
