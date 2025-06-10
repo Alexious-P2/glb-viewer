@@ -88,31 +88,27 @@ gui.add(envSettings, 'intensity', 0, 5, 0.1).name('HDRI Intensity').onChange(() 
 */
 
 // Load HDRI for realistic environment with Rotation
-let envMapRotation = 0;
-let envMapMesh;
+let envMapMesh, envMapRotation = 0;
 
 const rgbeLoader = new RGBELoader();
 const pmremGenerator = new THREE.PMREMGenerator(renderer);
 pmremGenerator.compileEquirectangularShader();
 
 rgbeLoader.load('hdri/lightroom_14b_high.hdr', (hdrTexture) => {
-  hdrTexture.mapping = THREE.EquirectangularReflectionMapping;
-
   const envMap = pmremGenerator.fromEquirectangular(hdrTexture).texture;
+  hdrTexture.dispose();
+  pmremGenerator.dispose();
 
   scene.environment = envMap;
-  scene.background = envMap; // Optional: set to envMap if you want visible HDRI
+  scene.background = null;
 
-  // Build fake cube skybox for rotation
+  // Create invisible skybox for lighting rotation
   const material = new THREE.MeshBasicMaterial({
     envMap: envMap,
     side: THREE.BackSide
   });
 
-  envMapMesh = new THREE.Mesh(
-    new THREE.BoxGeometry(100, 100, 100),
-    material
-  );
+  envMapMesh = new THREE.Mesh(new THREE.BoxGeometry(50, 50, 50), material);
   scene.add(envMapMesh);
 });
 
