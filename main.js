@@ -275,6 +275,13 @@ const ssaoPass = new SSAOPass(scene, camera, window.innerWidth, window.innerHeig
 ssaoPass.kernelRadius = 8;
 composer.addPass(ssaoPass);
 
+// GUI for SSAO
+const aoFolder = gui.addFolder('Ambient Occlusion');
+aoFolder.add(ssaoPass, 'kernelRadius', 0, 32).step(1).name('Kernel Radius');
+aoFolder.add(ssaoPass, 'minDistance', 0.001, 0.02).step(0.001).name('Min Distance');
+aoFolder.add(ssaoPass, 'maxDistance', 0.01, 0.3).step(0.01).name('Max Distance');
+aoFolder.open();
+
 // Animation loop
 function animate() {
   requestAnimationFrame(animate);
