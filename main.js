@@ -89,8 +89,8 @@ gui.add(envSettings, 'intensity', 0, 5, 0.1).name('HDRI Intensity').onChange(() 
 
 // Load HDRI for realistic environment and GI lighting
 
-hdriIntensity: 1,
-hdriRotation: 0
+let hdriRotation = 0;
+let hdriIntensity = 1;
 	
 new RGBELoader().load('hdri/lightroom_14b_low.hdr', (hdrMap) => {
   hdrMap.mapping = THREE.EquirectangularReflectionMapping;
