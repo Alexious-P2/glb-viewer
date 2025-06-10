@@ -28,11 +28,15 @@ camera.position.set(2, 2, 5);
 
 // Renderer
 const renderer = new THREE.WebGLRenderer({ antialias: true });
-renderer.shadowMap.enabled = true;
-renderer.shadowMap.type = THREE.VSMShadowMap; //THREE.PCFSoftShadowMap;
 renderer.setSize(window.innerWidth, window.innerHeight);
 renderer.outputEncoding = THREE.sRGBEncoding;
 document.body.appendChild(renderer.domElement);
+
+// Enable VSM Soft Shadows
+renderer.shadowMap.enabled = true;
+renderer.shadowMap.type = THREE.VSMShadowMap; //THREE.PCFSoftShadowMap;
+renderer.toneMapping = THREE.ACESFilmicToneMapping;
+renderer.toneMappingExposure = 1.0;
 
 // Controls
 const controls = new OrbitControls(camera, renderer.domElement);
@@ -101,7 +105,7 @@ dirLightA.shadow.camera.left = -10;
 dirLightA.shadow.camera.right = 10;
 dirLightA.shadow.camera.top = 10;
 dirLightA.shadow.camera.bottom = -10;
-//dirLightA.shadow.bias = -0.05; //-.0005
+//dirLightA.shadow.bias = -0.005; //-.0005
 dirLightA.shadow.normalBias = 0.005; //.02 default //.05 extending // .01 good // Or try 0.01 to reduce jagginess
 dirLightA.shadow.radius = 10;
 
@@ -149,13 +153,30 @@ const ambientFolder = gui.addFolder('Ambient Light');
 ambientFolder.add(ambientLight, 'intensity', 0, 2, 0.01).name('Intensity');
 ambientFolder.open();
 
-// Ground Plane
+/*
+// Ground Plane Default
 const groundGeo = new THREE.PlaneGeometry(20, 20);
 const groundMat = new THREE.ShadowMaterial({ opacity: 0.3 });
 
 const ground = new THREE.Mesh(groundGeo, groundMat);
 ground.rotation.x = -Math.PI / 2;
 ground.position.y = 0;
+ground.receiveShadow = true;
+scene.add(ground);
+*/
+
+// Reflective ground material to blend with soft shadows
+const groundGeo = new THREE.PlaneGeometry(20, 20);
+const groundMat = new THREE.MeshStandardMaterial({
+  color: 0x777777,
+  roughness: 1,
+  metalness: 0.05,
+  opacity: 0.3,
+  transparent: true 
+});
+groundMat.shadowSide = THREE.BackSide;
+const ground = new THREE.Mesh(groundGeo, groundMat);
+ground.rotation.x = -Math.PI / 2;
 ground.receiveShadow = true;
 scene.add(ground);
 
