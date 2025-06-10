@@ -9,6 +9,7 @@ import { ReflectorForSSRPass } from 'three/examples/jsm/objects/ReflectorForSSRP
 import { RenderPass } from 'three/examples/jsm/postprocessing/RenderPass.js';
 import { SSRPass } from 'https://cdn.jsdelivr.net/npm/three@0.160.1/examples/jsm/postprocessing/SSRPass.js';
 import { ShaderPass } from 'three/examples/jsm/postprocessing/ShaderPass.js';
+import { SSAOPass } from 'three/examples/jsm/postprocessing/SSAOPass.js';
 //import { MeshReflectorMaterial } from 'https://unpkg.com/three@0.155.0/examples/jsm/objects/MeshReflectorMaterial.js';
 //import { EffectComposer, RenderPass, EffectPass, SSRPass} from 'https://cdn.jsdelivr.net/npm/postprocessing@6.30.2/+esm';
 
@@ -105,9 +106,9 @@ dirLightA.shadow.camera.left = -10;
 dirLightA.shadow.camera.right = 10;
 dirLightA.shadow.camera.top = 10;
 dirLightA.shadow.camera.bottom = -10;
-dirLightA.shadow.bias = -0.005; //-.0005
-dirLightA.shadow.normalBias = 0.005; //.02 default //.05 extending // .01 good // Or try 0.01 to reduce jagginess
-dirLightA.shadow.radius = 10;
+//dirLightA.shadow.bias = -0.005; //-.0005
+dirLightA.shadow.normalBias = 0.001; //.02 default //.05 extending // .01 good // Or try 0.01 to reduce jagginess
+dirLightA.shadow.radius = 5;
 
 scene.add(dirLightA);
 const helperA = new THREE.DirectionalLightHelper(dirLightA, 0.3);
@@ -181,7 +182,7 @@ groundFolder.add(groundSettings, 'shadowOpacity', 0, 1).step(0.01).name('Shadow 
 
 groundFolder.add(dirLightA.shadow, 'radius', 0, 20).step(0.1).name('Blur Radius');
 groundFolder.add(dirLightA.shadow, 'normalBias', 0, 0.2).step(0.001).name('Normal Bias');
-groundFolder.add(dirLightA.shadow, 'bias', -0.2, 0.2).step(0.001).name('Shadow Bias');
+//groundFolder.add(dirLightA.shadow, 'bias', -0.2, 0.2).step(0.001).name('Shadow Bias');
 
 groundFolder.open();
 
@@ -268,6 +269,11 @@ gui.add(ssrPass, 'distanceAttenuation')
 gui.add( ssrPass, 'blur' );
 
 gui.add(ssrPass, 'bouncing').name('Enable Bouncing');
+
+// SSAO Ambient Occlusion
+const ssaoPass = new SSAOPass(scene, camera, window.innerWidth, window.innerHeight);
+ssaoPass.kernelRadius = 8;
+composer.addPass(ssaoPass);
 
 // Animation loop
 function animate() {
