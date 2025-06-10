@@ -58,7 +58,7 @@ sceneFolder.addColor(sceneParams, 'backgroundColor')
 
 sceneFolder.open();
 
-/*
+
 // Load HDRI for lighting and reflections
 const hdriPath = 'hdri/lightroom_14b_low.hdr'; // Make sure the file is in your GitHub repo
 const rgbeLoader = new RGBELoader();
@@ -84,41 +84,6 @@ gui.add(envSettings, 'intensity', 0, 5, 0.1).name('HDRI Intensity').onChange(() 
       child.material.needsUpdate = true;
     }
   });
-});
-*/
-
-// Setup HDRI rotation system
-let envSphere, envScene, cubeCamera, dynamicEnvMap;
-let envMapRotation = 0;
-
-const rgbeLoader = new RGBELoader();
-
-rgbeLoader.load('hdri/lightroom_14b_high.hdr', (hdrTexture) => {
-  hdrTexture.mapping = THREE.EquirectangularReflectionMapping;
-
-  // 1) Create sphere with HDR texture
-  envSphere = new THREE.Mesh(
-    new THREE.SphereGeometry(50, 32, 32),
-    new THREE.MeshBasicMaterial({ map: hdrTexture, side: THREE.BackSide })
-  );
-
-  // 2) Put it into its own scene for cube renders
-  envScene = new THREE.Scene();
-  envScene.add(envSphere);
-
-  // 3) Make the CubeCamera
-  cubeCamera = new THREE.CubeCamera(0.1, 100, 256);
-  cubeCamera.update(renderer, envScene);
-
-  // 4) Use its renderTarget as your dynamic envMap
-  dynamicEnvMap = cubeCamera.renderTarget.texture;
-  scene.environment = dynamicEnvMap;
-});
-
-// GUI for HDRI Rotation
-const settings = { envRotation: 0 };
-gui.add(settings, 'envRotation', 0, 360).onChange(v => {
-  envMapRotation = THREE.MathUtils.degToRad(v);
 });
 
 // Lights
@@ -325,15 +290,6 @@ function animate() {
   requestAnimationFrame(animate);
   controls.update();
   //renderer.render(scene, camera);
-  if (envSphere && envScene && cubeCamera) {
-    // Rotate your HDR sphere
-    envSphere.rotation.y = envMapRotation;
-
-    // Re-render the cube camera from the *envScene*
-    cubeCamera.update(renderer, envScene);
-
-    // scene.environment already points at cubeCamera.renderTarget.texture
-  }
   composer.render();
 }
 animate();
