@@ -59,7 +59,6 @@ sceneFolder.addColor(sceneParams, 'backgroundColor')
 
 sceneFolder.open();
 
-/*
 // Load HDRI for lighting and reflections
 const hdriPath = 'hdri/lightroom_14b_low.hdr'; // Make sure the file is in your GitHub repo
 const rgbeLoader = new RGBELoader();
@@ -86,8 +85,8 @@ gui.add(envSettings, 'intensity', 0, 5, 0.1).name('HDRI Intensity').onChange(() 
     }
   });
 });
-*/
 
+/*
 // Load HDRI for realistic environment and GI lighting
 let hdriRotation = 0;
 let hdriIntensity = 1;
@@ -114,6 +113,7 @@ new RGBELoader().load('hdri/lightroom_14b_low.hdr', (hdrMap) => {
     renderer.toneMappingExposure = hdriIntensity;
   });
 });
+*/
   
 
 // Lights
