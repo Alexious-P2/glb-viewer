@@ -183,13 +183,22 @@ const loader = new GLTFLoader();
 loader.load('model.glb', (gltf) => {
   console.log('Model loaded:', gltf);  // ✅ Check this logs something
 
-  // Enable shadows for all meshes in the model
-  gltf.scene.traverse((node) => {
-    if (node.isMesh) {
-      node.castShadow = true;     // Mesh will cast shadows
-      node.receiveShadow = true;  // Optional: receives shadows if needed
+  // Traverse all meshes
+  model.traverse((child) => {
+    if (child.isMesh) {
+      child.castShadow = true; // All meshes can cast if needed
+
+      if (child.name === 'shadow') {
+        // ✅ This mesh receives shadow with transparent shadow material
+        child.receiveShadow = true;
+        child.material = new THREE.ShadowMaterial({ opacity: 0.4 });
+      } else {
+        // ❌ Others don't receive shadows
+        child.receiveShadow = false;
+      }
     }
   });
+});
 
   scene.add(gltf.scene);
 }, undefined, (error) => {
