@@ -129,7 +129,7 @@ function updateLights() {
 updateLights();
 
 // GUI Controls
-const lightFolder = gui.addFolder('Directional Light');
+const lightFolder = gui.addFolder('Dual Directional Light');
 lightFolder.add(lightParams, 'angle', 0, 360).onChange(updateLights);
 lightFolder.add(lightParams, 'radius', 1, 10).onChange(updateLights);
 lightFolder.add(lightParams, 'height', -5, 10).onChange(updateLights);
@@ -181,27 +181,17 @@ const geometry = new THREE.PlaneGeometry(1, 1);
 // Load GLB model with shadow
 const loader = new GLTFLoader();
 loader.load('model.glb', (gltf) => {
-  console.log('Model loaded:', gltf);  // ✅ Confirm model is loaded
+  console.log('Model loaded:', gltf);  // ✅ Check this logs something
 
-  const model = gltf.scene;
-
-  // Traverse all meshes
-  model.traverse((child) => {
-    if (child.isMesh) {
-      child.castShadow = true; // All meshes can cast if needed
-
-      if (child.name === 'shadow') {
-        // ✅ Shadow-receiving mesh with transparent shadow material
-        child.receiveShadow = true;
-        child.material = new THREE.ShadowMaterial({ opacity: 0.4 });
-      } else {
-        // ❌ Others don't receive shadows
-        child.receiveShadow = false;
-      }
+  // Enable shadows for all meshes in the model
+  gltf.scene.traverse((node) => {
+    if (node.isMesh) {
+      node.castShadow = true;     // Mesh will cast shadows
+      node.receiveShadow = true;  // Optional: receives shadows if needed
     }
   });
 
-  scene.add(model); // ✅ Add to scene inside success callback
+  scene.add(gltf.scene);
 }, undefined, (error) => {
   console.error('GLB Load Error:', error);
 });
