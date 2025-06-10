@@ -76,7 +76,7 @@ const envSettings = {
   intensity: 1
 };
 
-gui.add(envSettings, 'intensity', 0, 5, 0.1).name('HDRI Intensity').onChange(() => {
+gui.add(envSettings, 'intensity', 0, 10, 0.1).name('HDRI Intensity').onChange(() => {
   scene.traverse((child) => {
     if (child.isMesh && child.material && child.material.envMapIntensity !== undefined) {
       child.material.envMapIntensity = envSettings.intensity;
@@ -144,14 +144,14 @@ const lightFolder = gui.addFolder('Dual Directional Light');
 lightFolder.add(lightParams, 'angle', 0, 360).onChange(updateLights);
 lightFolder.add(lightParams, 'radius', 1, 10).onChange(updateLights);
 lightFolder.add(lightParams, 'height', -5, 10).onChange(updateLights);
-lightFolder.add(lightParams, 'intensity', 0, 5, 0.01).onChange(updateLights);
+lightFolder.add(lightParams, 'intensity', 0, 20, 0.01).onChange(updateLights);
 
 // Ambient Light
 const ambientLight = new THREE.AmbientLight(0xffffff, 0.5);
 scene.add(ambientLight);
 
 const ambientFolder = gui.addFolder('Ambient Light');
-ambientFolder.add(ambientLight, 'intensity', 0, 2, 0.01).name('Intensity');
+ambientFolder.add(ambientLight, 'intensity', 0, 5, 0.01).name('Intensity');
 ambientFolder.open();
 
 // Ground Plane Default
