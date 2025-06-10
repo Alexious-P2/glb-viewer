@@ -10,6 +10,7 @@ import { RenderPass } from 'three/examples/jsm/postprocessing/RenderPass.js';
 import { SSRPass } from 'https://cdn.jsdelivr.net/npm/three@0.160.1/examples/jsm/postprocessing/SSRPass.js';
 import { ShaderPass } from 'three/examples/jsm/postprocessing/ShaderPass.js';
 import { SSAOPass } from 'three/examples/jsm/postprocessing/SSAOPass.js';
+import { LightProbeGenerator } from 'three/examples/jsm/lights/LightProbeGenerator.js';
 //import { MeshReflectorMaterial } from 'https://unpkg.com/three@0.155.0/examples/jsm/objects/MeshReflectorMaterial.js';
 //import { EffectComposer, RenderPass, EffectPass, SSRPass} from 'https://cdn.jsdelivr.net/npm/postprocessing@6.30.2/+esm';
 
@@ -58,6 +59,7 @@ sceneFolder.addColor(sceneParams, 'backgroundColor')
 
 sceneFolder.open();
 
+/*
 // Load HDRI for lighting and reflections
 const hdriPath = 'hdri/lightroom_14b_low.hdr'; // Make sure the file is in your GitHub repo
 const rgbeLoader = new RGBELoader();
@@ -84,6 +86,35 @@ gui.add(envSettings, 'intensity', 0, 5, 0.1).name('HDRI Intensity').onChange(() 
     }
   });
 });
+*/
+
+// Load HDRI for realistic environment and GI lighting
+let hdriRotation = 0;
+let hdriIntensity = 1;
+
+new RGBELoader().load('textures/studio_small_09.hdr', (hdrMap) => {
+  hdrMap.mapping = THREE.EquirectangularReflectionMapping;
+  scene.environment = hdrMap;
+  scene.background = null; // ← HDRI not visible in background
+  const lightProbe = LightProbeGenerator.fromCubeTexture(hdrMap);
+  scene.add(lightProbe);
+
+  // Save reference for GUI-controlled rotation
+  const envMap = hdrMap;
+  envMap.center = new THREE.Vector2(0.5, 0.5);
+  envMap.rotation = hdriRotation;
+
+  const envSettings = { hdriRotation: 0, hdriIntensity: 1 };
+  gui.add(envSettings, 'hdriRotation', 0, Math.PI * 2).step(0.01).name('HDRI Rotation').onChange(value => {
+    hdriRotation = value;
+    envMap.rotation = hdriRotation;
+  });
+  gui.add(envSettings, 'hdriIntensity', 0, 5).step(0.1).name('HDRI Intensity').onChange(value => {
+    hdriIntensity = value;
+    renderer.toneMappingExposure = hdriIntensity;
+  });
+});
+  
 
 // Lights
 const lightParams = {
