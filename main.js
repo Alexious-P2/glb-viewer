@@ -91,7 +91,8 @@ gui.add(envSettings, 'intensity', 0, 5, 0.1).name('HDRI Intensity').onChange(() 
 
 let hdriRotation = 0;
 let hdriIntensity = 1;
-	
+let skyMesh = null;
+
 new RGBELoader().load('hdri/lightroom_14b_low.hdr', (hdrMap) => {
   hdrMap.mapping = THREE.EquirectangularReflectionMapping;
 
@@ -101,9 +102,14 @@ new RGBELoader().load('hdri/lightroom_14b_low.hdr', (hdrMap) => {
 
   scene.environment = envMap;
 
-  // Optional: simulate ambient light probe
-  // const lightProbe = LightProbeGenerator.fromCubeTexture(envMap);
-  // scene.add(lightProbe);
+  // Sky dome for visible HDRI background and rotation
+  const skyGeo = new THREE.SphereGeometry(50, 60, 40);
+  const skyMat = new THREE.MeshBasicMaterial({
+    map: hdrMap,
+    side: THREE.BackSide
+  });
+  skyMesh = new THREE.Mesh(skyGeo, skyMat);
+  scene.add(skyMesh);
 
   const envSettings = {
     hdriIntensity: 1,
@@ -117,12 +123,9 @@ new RGBELoader().load('hdri/lightroom_14b_low.hdr', (hdrMap) => {
 
   gui.add(envSettings, 'hdriRotation', 0, Math.PI * 2).step(0.01).name('HDRI Rotation').onChange(value => {
     hdriRotation = value;
-    // Note: Cannot rotate scene.environment directly
-    // Instead, rotate directional light or rotate skydome (if used)
+    if (skyMesh) skyMesh.rotation.y = hdriRotation;
   });
 });
-
-  
 
 // Lights
 const lightParams = {
