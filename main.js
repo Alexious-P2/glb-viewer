@@ -115,9 +115,9 @@ rgbeLoader.load('hdri/lightroom_14b_low.hdr', (texture) => {
 });
 
 // HDR GUI for rotation
-const settings = {
-  envRotation: 0
-};
+let envMapRotation = 0;
+
+const settings = { envRotation: 0 };
 gui.add(settings, 'envRotation', 0, 360).onChange((v) => {
   envMapRotation = THREE.MathUtils.degToRad(v);
 });
@@ -350,7 +350,7 @@ function animate() {
   controls.update();
   //renderer.render(scene, camera);
   if (envMapMesh) {
-    envMapMesh.rotation.y = envMapRotation; // This controls HDRI lighting rotation
+    envMapMesh.rotation.y = envMapRotation; // No error now
   }
   composer.render();
 }
