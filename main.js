@@ -117,8 +117,6 @@ rgbeLoader.load('./hdr/your_hdri.hdr', (hdrTexture) => {
 });
 
 // HDR GUI for rotation
-let envMapRotation = 0;
-
 const settings = { envRotation: 0 };
 gui.add(settings, 'envRotation', 0, 360).onChange((v) => {
   envMapRotation = THREE.MathUtils.degToRad(v);
