@@ -233,7 +233,10 @@ scene.add(groundReflector);
 const composer = new EffectComposer(renderer);
 composer.addPass(new RenderPass(scene, camera));
 
-const reflectiveMesh = scene.getObjectByName('kbBase_Reflect');
+const mesh1 = scene.getObjectByName('kbBase_Reflect');
+const mesh2 = scene.getObjectByName('groundReflector');
+
+const reflectiveMeshes = [mesh1, mesh2].filter(Boolean); // filters out null if not found
 
 const ssrPass = new SSRPass({
   renderer,
@@ -242,7 +245,7 @@ const ssrPass = new SSRPass({
   width: window.innerWidth,
   height: window.innerHeight,
   groundReflector: groundReflector,
-  selects: [groundReflector], [reflectiveMesh] // null You can specify reflective meshes if you want 
+  selects: [reflectiveMesh] // null You can specify reflective meshes if you want 
 });  
 
 ssrPass.maxDistance = 0.1;
