@@ -108,39 +108,28 @@ dirLightA.shadow.camera.top = 10;
 dirLightA.shadow.camera.bottom = -10;
 //dirLightA.shadow.bias = -0.005; //-.0005
 dirLightA.shadow.normalBias = 0.001; //.02 default //.05 extending // .01 good // Or try 0.01 to reduce jagginess
-//dirLightA.shadow.radius = 5;
+dirLightA.shadow.radius = 5;
 
 scene.add(dirLightA);
 const helperA = new THREE.DirectionalLightHelper(dirLightA, 0.3);
 scene.add(helperA);
 
-// Directional Light B (45° offset)
-const dirLightB = new THREE.DirectionalLight(0xe4f0ff, lightParams.intensity * 0);
-
-scene.add(dirLightB);
-const helperB = new THREE.DirectionalLightHelper(dirLightB, 0.3);
-//scene.add(helperB);
-
 function updateLights() {
   const radA = THREE.MathUtils.degToRad(lightParams.angle);
-  const radB = THREE.MathUtils.degToRad(lightParams.angle + 45);
-
+  
   dirLightA.position.set(Math.cos(radA) * lightParams.radius, lightParams.height, Math.sin(radA) * lightParams.radius);
-  dirLightB.position.set(Math.cos(radB) * lightParams.radius, lightParams.height, Math.sin(radB) * lightParams.radius);
-
+  
   dirLightA.intensity = lightParams.intensity;
-  dirLightB.intensity = lightParams.intensity * 0.8;
-
+  
   dirLightA.lookAt(0, 0, 0);
-  dirLightB.lookAt(0, 0, 0);
-
+  
   helperA.update();
-  //helperB.update();
+ 
 }
 updateLights();
 
 // GUI Controls
-const lightFolder = gui.addFolder('Dual Directional Light');
+const lightFolder = gui.addFolder('Directional Light');
 lightFolder.add(lightParams, 'angle', 0, 360).onChange(updateLights);
 lightFolder.add(lightParams, 'radius', 1, 10).onChange(updateLights);
 lightFolder.add(lightParams, 'height', -5, 10).onChange(updateLights);
