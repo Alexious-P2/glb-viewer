@@ -183,6 +183,7 @@ const geometry = new THREE.PlaneGeometry(1, 1);
 // Declare mixer and animationAction at top-level scope
 let mixer;
 let animationAction;
+let clipDuration = 0;
 
 // Load GLB model with shadow
 const loader = new GLTFLoader();
@@ -205,6 +206,11 @@ loader.load('model.glb', (gltf) => {
   animationAction = mixer.clipAction(clip);
   animationAction.play();
   mixer.setTime(0);
+
+  // Determine clip duration in frames and update scrubber max accordingly
+  clipDuration = clip.duration; // in seconds
+  const totalFrames = Math.floor(clipDuration * 30); // assuming 30fps
+  scrubber.max = totalFrames;
 }, undefined, (error) => {
   console.error('GLB Load Error:', error);
 });
@@ -222,6 +228,17 @@ scrubber.style.zIndex = 100;
 scrubber.style.width = '300px';
 document.body.appendChild(scrubber);
 
+// Frame display
+const frameLabel = document.createElement('div');
+frameLabel.style.position = 'absolute';
+frameLabel.style.top = '40px';
+frameLabel.style.left = '10px';
+frameLabel.style.zIndex = 100;
+frameLabel.style.color = 'white';
+frameLabel.style.fontFamily = 'monospace';
+frameLabel.innerText = 'Frame: 1';
+document.body.appendChild(frameLabel);
+
 // Listen for scrubber input
 scrubber.addEventListener('input', (e) => {
   const frame = parseInt(e.target.value);
@@ -229,6 +246,7 @@ scrubber.addEventListener('input', (e) => {
   if (mixer && animationAction) {
     mixer.setTime(seconds);
   }
+  frameLabel.innerText = `Frame: ${frame}`;
 });
 
 
@@ -266,7 +284,7 @@ const ssrPass = new SSRPass({
   width: window.innerWidth,
   height: window.innerHeight,
   groundReflector: groundReflector,
-  selects: null // null You can specify reflective meshes if you want 
+  selects: [groundReflector] // null You can specify reflective meshes if you want 
 });  
 
 ssrPass.maxDistance = 0.1;
