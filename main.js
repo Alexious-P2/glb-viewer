@@ -194,9 +194,39 @@ loader.load('model.glb', (gltf) => {
   });
 
   scene.add(gltf.scene);
+  
+  // Setup animation
+  mixer = new THREE.AnimationMixer(gltf.scene);
+  const clip = THREE.AnimationClip.findByName(gltf.animations, 'Animation');
+  animationAction = mixer.clipAction(clip);
+  animationAction.play();
+  mixer.setTime(0);
 }, undefined, (error) => {
   console.error('GLB Load Error:', error);
 });
+
+// Create scrubber via JavaScript
+const scrubber = document.createElement('input');
+scrubber.type = 'range';
+scrubber.min = 1;
+scrubber.max = 150;
+scrubber.value = 1;
+scrubber.style.position = 'absolute';
+scrubber.style.top = '10px';
+scrubber.style.left = '10px';
+scrubber.style.zIndex = 100;
+scrubber.style.width = '300px';
+document.body.appendChild(scrubber);
+
+// Listen for scrubber input
+scrubber.addEventListener('input', (e) => {
+  const frame = parseInt(e.target.value);
+  const seconds = frame / 30; // assuming 30fps
+  if (mixer && animationAction) {
+    mixer.setTime(seconds);
+  }
+});
+
 
 // Create ReflectorForSSRPass instance
 const groundReflector = new ReflectorForSSRPass(geometry, {
