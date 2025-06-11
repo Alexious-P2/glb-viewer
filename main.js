@@ -242,7 +242,7 @@ document.body.appendChild(frameLabel);
 // Listen for scrubber input
 scrubber.addEventListener('input', (e) => {
   const frame = parseInt(e.target.value);
-  const seconds = frame / 24; // assuming 30fps
+  const seconds = frame / 30; // assuming 30fps
   if (mixer && animationAction) {
     mixer.setTime(seconds);
   }
