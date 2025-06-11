@@ -180,6 +180,10 @@ groundFolder.open();
 // Create ground reflector geometry
 const geometry = new THREE.PlaneGeometry(1, 1);
 
+// Declare mixer and animationAction at top-level scope
+let mixer;
+let animationAction;
+
 // Load GLB model with shadow
 const loader = new GLTFLoader();
 loader.load('model.glb', (gltf) => {
