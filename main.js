@@ -209,7 +209,7 @@ loader.load('model.glb', (gltf) => {
 
   // Determine clip duration in frames and update scrubber max accordingly
   clipDuration = clip.duration; // in seconds
-  const totalFrames = Math.floor(clipDuration * 30); // assuming 30fps
+  const totalFrames = Math.min(Math.floor(clipDuration * 30), 150); // clamp to 150 frames
   scrubber.max = totalFrames;
 }, undefined, (error) => {
   console.error('GLB Load Error:', error);
@@ -219,7 +219,7 @@ loader.load('model.glb', (gltf) => {
 const scrubber = document.createElement('input');
 scrubber.type = 'range';
 scrubber.min = 1;
-scrubber.max = Math.min(totalFrames, 150);
+scrubber.max = 150;
 scrubber.value = 1;
 scrubber.style.position = 'absolute';
 scrubber.style.top = '10px';
