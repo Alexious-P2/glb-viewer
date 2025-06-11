@@ -178,7 +178,7 @@ groundFolder.add(dirLightA.shadow, 'normalBias', 0, 0.2).step(0.001).name('Norma
 groundFolder.open();
 
 // Create ground reflector geometry
-const geometry = new THREE.PlaneGeometry(1, 1);
+const geometry = new THREE.PlaneGeometry(20, 20);
 
 // Declare mixer and animationAction at top-level scope
 let mixer;
@@ -242,7 +242,7 @@ document.body.appendChild(frameLabel);
 // Listen for scrubber input
 scrubber.addEventListener('input', (e) => {
   const frame = parseInt(e.target.value);
-  const seconds = frame / 30; // assuming 30fps
+  const seconds = frame / 24; // assuming 30fps
   if (mixer && animationAction) {
     mixer.setTime(seconds);
   }
@@ -311,19 +311,6 @@ gui.add(ssrPass, 'distanceAttenuation')
   });
 
 gui.add( ssrPass, 'blur' );
-// Blur passes
-const hBlur = new ShaderPass(HorizontalBlurShader);
-const vBlur = new ShaderPass(VerticalBlurShader);
-hBlur.uniforms.h.value = 1 / window.innerWidth;
-vBlur.uniforms.v.value = 1 / window.innerHeight;
-
-composer.addPass(hBlur);
-composer.addPass(vBlur);
-
-// GUI for blur strength
-gui.add(hBlur.uniforms.h, 'value', 0.0, 0.01).step(0.0005).name('Horizontal Blur');
-gui.add(vBlur.uniforms.v, 'value', 0.0, 0.01).step(0.0005).name('Vertical Blur');
-
 
 gui.add(ssrPass, 'bouncing').name('Enable Bouncing');
 
