@@ -205,7 +205,8 @@ loader.load('model.glb', (gltf) => {
   const clip = THREE.AnimationClip.findByName(gltf.animations, 'Animation');
   animationAction = mixer.clipAction(clip);
   animationAction.play();
-  mixer.setTime(0);
+  mixer.setTime(35 / 30); // Set to frame 35 (at 30fps)
+  frameLabel.innerText = 'Frame: 35';
 
   // Determine clip duration in frames and update scrubber max accordingly
   clipDuration = clip.duration; // in seconds
@@ -220,7 +221,7 @@ const scrubber = document.createElement('input');
 scrubber.type = 'range';
 scrubber.min = 1;
 scrubber.max = 150;
-scrubber.value = 1;
+scrubber.value = 35;
 scrubber.style.position = 'absolute';
 scrubber.style.top = '10px';
 scrubber.style.left = '10px';
