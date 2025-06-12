@@ -143,30 +143,37 @@ lightFolder.add(lightParams, 'intensity', 0, 20, 0.01).onChange(updateLights);
 // areaLight
 RectAreaLightUniformsLib.init(); // Important
 
-const areaLight = new RectAreaLight(0xffffff, 5, 2, 2); // color, intensity, width, height
-areaLight.position.set(2, 3, 2);
-areaLight.lookAt(0, 0, 0);
-scene.add(areaLight);
+// Create a pivot
+const lightPivot = new THREE.Object3D();
+scene.add(lightPivot);
 
-// Optional: add a helper
-const areaLightHelper = new RectAreaLightHelper(areaLight);
-areaLight.add(areaLightHelper);
+// Create the area light
+const areaLight = new RectAreaLight(0xffffff, 5, 2, 2);
+areaLight.position.set(0, 2, 5); // Place light in front of model
+areaLight.lookAt(0, 0, 0);
+lightPivot.add(areaLight); // Attach light to pivot
+
+// Optionally add helper
+const areaHelper = new RectAreaLightHelper(areaLight);
+areaLight.add(areaHelper);
 
 //GUI areaLight
-const lightPosition = {
-  x: areaLight.position.x,
-  y: areaLight.position.y,
-  z: areaLight.position.z
+const lightControl = {
+  rotateX: 0,
+  rotateY: 0,
+  rotateZ: 0,
 };
 
-lightFolder.add(lightPosition, 'x', -10, 10).step(0.1).onChange(() => {
-  areaLight.position.x = lightPosition.x;
+const lightFolder = gui.addFolder('Area Light Orbit');
+
+lightFolder.add(lightControl, 'rotateX', -Math.PI, Math.PI).onChange(() => {
+  lightPivot.rotation.x = lightControl.rotateX;
 });
-lightFolder.add(lightPosition, 'y', -10, 10).step(0.1).onChange(() => {
-  areaLight.position.y = lightPosition.y;
+lightFolder.add(lightControl, 'rotateY', -Math.PI, Math.PI).onChange(() => {
+  lightPivot.rotation.y = lightControl.rotateY;
 });
-lightFolder.add(lightPosition, 'z', -10, 10).step(0.1).onChange(() => {
-  areaLight.position.z = lightPosition.z;
+lightFolder.add(lightControl, 'rotateZ', -Math.PI, Math.PI).onChange(() => {
+  lightPivot.rotation.z = lightControl.rotateZ;
 });
 
 // Ambient Light
