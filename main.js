@@ -147,7 +147,7 @@ const lightPivot = new THREE.Object3D();
 scene.add(lightPivot);
 
 // Create the area light
-const areaLight = new RectAreaLight(0xffffff, 5, 2, 2);
+const areaLight = new THREE.RectAreaLight(0xffffff, 5, 2, 2);
 areaLight.position.set(0, 2, 5); // Place light in front of model
 areaLight.lookAt(0, 0, 0);
 lightPivot.add(areaLight); // Attach light to pivot
