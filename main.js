@@ -12,8 +12,9 @@ import { ShaderPass } from 'three/examples/jsm/postprocessing/ShaderPass.js';
 import { SSAOPass } from 'three/examples/jsm/postprocessing/SSAOPass.js';
 import { HorizontalBlurShader } from 'three/examples/jsm/shaders/HorizontalBlurShader.js';
 import { VerticalBlurShader } from 'three/examples/jsm/shaders/VerticalBlurShader.js';
-import { RectAreaLight, RectAreaLightHelper, RectAreaLightUniformsLib } from 'three/examples/jsm/lights/RectAreaLightUniformsLib.js';
-RectAreaLightUniformsLib.init();
+import { RectAreaLight } from 'three/examples/jsm/lights/RectAreaLight.js';
+import { RectAreaLightHelper } from 'three/examples/jsm/helpers/RectAreaLightHelper.js';
+import { RectAreaLightUniformsLib } from 'three/examples/jsm/lights/RectAreaLightUniformsLib.js';
 //import { MeshReflectorMaterial } from 'https://unpkg.com/three@0.155.0/examples/jsm/objects/MeshReflectorMaterial.js';
 //import { EffectComposer, RenderPass, EffectPass, SSRPass} from 'https://cdn.jsdelivr.net/npm/postprocessing@6.30.2/+esm';
 
@@ -140,32 +141,32 @@ lightFolder.add(lightParams, 'height', -5, 10).onChange(updateLights);
 lightFolder.add(lightParams, 'intensity', 0, 20, 0.01).onChange(updateLights);
 
 // areaLight
-// Create a pivot to rotate the light around the model
-const areaLightPivot = new THREE.Object3D();
-scene.add(areaLightPivot);
+RectAreaLightUniformsLib.init(); // Important
 
-// Create the area light
-const areaLight = new THREE.RectAreaLight(0xffffff, 5, 1, 1); // (color, intensity, width, height)
-areaLight.position.set(5, 5, 0); // initial position
-areaLight.lookAt(0, 0, 0); // aim toward model
-areaLightPivot.add(areaLight);
+const areaLight = new RectAreaLight(0xffffff, 5, 2, 2); // color, intensity, width, height
+areaLight.position.set(2, 3, 2);
+areaLight.lookAt(0, 0, 0);
+scene.add(areaLight);
 
-// Optional: add helper
+// Optional: add a helper
 const areaLightHelper = new RectAreaLightHelper(areaLight);
 areaLight.add(areaLightHelper);
 
-// Add GUI control
-const areaLightSettings = {
-  rotation: 0,
-  intensity: areaLight.intensity,
+//GUI areaLight
+const lightPosition = {
+  x: areaLight.position.x,
+  y: areaLight.position.y,
+  z: areaLight.position.z
 };
 
-gui.add(areaLightSettings, 'rotation', 0, Math.PI * 2).step(0.01).onChange((v) => {
-  areaLightPivot.rotation.y = v;
+lightFolder.add(lightPosition, 'x', -10, 10).step(0.1).onChange(() => {
+  areaLight.position.x = lightPosition.x;
 });
-
-gui.add(areaLightSettings, 'intensity', 0, 20).step(0.1).onChange((v) => {
-  areaLight.intensity = v;
+lightFolder.add(lightPosition, 'y', -10, 10).step(0.1).onChange(() => {
+  areaLight.position.y = lightPosition.y;
+});
+lightFolder.add(lightPosition, 'z', -10, 10).step(0.1).onChange(() => {
+  areaLight.position.z = lightPosition.z;
 });
 
 // Ambient Light
