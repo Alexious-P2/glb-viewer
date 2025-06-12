@@ -164,15 +164,15 @@ const lightControl = {
   rotateZ: 0,
 };
 
-const lightFolder = gui.addFolder('Area Light Orbit');
+const areaLightFolder = gui.addFolder('Area Light');
 
-lightFolder.add(lightControl, 'rotateX', -Math.PI, Math.PI).onChange(() => {
+areaLightFolder.add(lightControl, 'rotateX', -Math.PI, Math.PI).onChange(() => {
   lightPivot.rotation.x = lightControl.rotateX;
 });
-lightFolder.add(lightControl, 'rotateY', -Math.PI, Math.PI).onChange(() => {
+areaLightFolder.add(lightControl, 'rotateY', -Math.PI, Math.PI).onChange(() => {
   lightPivot.rotation.y = lightControl.rotateY;
 });
-lightFolder.add(lightControl, 'rotateZ', -Math.PI, Math.PI).onChange(() => {
+areaLightFolder.add(lightControl, 'rotateZ', -Math.PI, Math.PI).onChange(() => {
   lightPivot.rotation.z = lightControl.rotateZ;
 });
 
