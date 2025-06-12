@@ -12,6 +12,8 @@ import { ShaderPass } from 'three/examples/jsm/postprocessing/ShaderPass.js';
 import { SSAOPass } from 'three/examples/jsm/postprocessing/SSAOPass.js';
 import { HorizontalBlurShader } from 'three/examples/jsm/shaders/HorizontalBlurShader.js';
 import { VerticalBlurShader } from 'three/examples/jsm/shaders/VerticalBlurShader.js';
+import { RectAreaLight, RectAreaLightHelper, RectAreaLightUniformsLib } from 'three/examples/jsm/lights/RectAreaLightUniformsLib.js';
+RectAreaLightUniformsLib.init();
 //import { MeshReflectorMaterial } from 'https://unpkg.com/three@0.155.0/examples/jsm/objects/MeshReflectorMaterial.js';
 //import { EffectComposer, RenderPass, EffectPass, SSRPass} from 'https://cdn.jsdelivr.net/npm/postprocessing@6.30.2/+esm';
 
@@ -136,6 +138,35 @@ lightFolder.add(lightParams, 'angle', 0, 360).onChange(updateLights);
 lightFolder.add(lightParams, 'radius', 1, 10).onChange(updateLights);
 lightFolder.add(lightParams, 'height', -5, 10).onChange(updateLights);
 lightFolder.add(lightParams, 'intensity', 0, 20, 0.01).onChange(updateLights);
+
+// areaLight
+// Create a pivot to rotate the light around the model
+const areaLightPivot = new THREE.Object3D();
+scene.add(areaLightPivot);
+
+// Create the area light
+const areaLight = new THREE.RectAreaLight(0xffffff, 5, 1, 1); // (color, intensity, width, height)
+areaLight.position.set(5, 5, 0); // initial position
+areaLight.lookAt(0, 0, 0); // aim toward model
+areaLightPivot.add(areaLight);
+
+// Optional: add helper
+const areaLightHelper = new RectAreaLightHelper(areaLight);
+areaLight.add(areaLightHelper);
+
+// Add GUI control
+const areaLightSettings = {
+  rotation: 0,
+  intensity: areaLight.intensity,
+};
+
+gui.add(areaLightSettings, 'rotation', 0, Math.PI * 2).step(0.01).onChange((v) => {
+  areaLightPivot.rotation.y = v;
+});
+
+gui.add(areaLightSettings, 'intensity', 0, 20).step(0.1).onChange((v) => {
+  areaLight.intensity = v;
+});
 
 // Ambient Light
 const ambientLight = new THREE.AmbientLight(0xffffff, 0.5);
