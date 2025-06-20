@@ -101,34 +101,44 @@ const lightParams = {
 const dirLightA = new THREE.DirectionalLight(0xffffff, lightParams.intensity);
 dirLightA.castShadow = true;
 
-dirLightA.shadow.mapSize.width = 4096;
-dirLightA.shadow.mapSize.height = 4096;
+dirLightA.shadow.mapSize.width = 8192;
+dirLightA.shadow.mapSize.height = 8192;
 
 dirLightA.shadow.camera.near = 0.1;
 dirLightA.shadow.camera.far = 10;
-dirLightA.shadow.camera.left = -10;
-dirLightA.shadow.camera.right = 10;
-dirLightA.shadow.camera.top = 10;
-dirLightA.shadow.camera.bottom = -10;
-//dirLightA.shadow.bias = -0.005; //-.0005
-dirLightA.shadow.normalBias = 0.001; //.02 default //.05 extending // .01 good // Or try 0.01 to reduce jagginess
-dirLightA.shadow.radius = 5;
+dirLightA.shadow.camera.left = -5;
+dirLightA.shadow.camera.right = 5;
+dirLightA.shadow.camera.top = 5;
+dirLightA.shadow.camera.bottom = -5;
+//dirLightA.shadow.bias = -0.05; //-.0005
+dirLightA.shadow.normalBias = 0.01; //.02 default //.05 extending // .01 good // Or try 0.01 to reduce jagginess
 
 scene.add(dirLightA);
 const helperA = new THREE.DirectionalLightHelper(dirLightA, 0.3);
 scene.add(helperA);
 
+// Directional Light B (45° offset)
+const dirLightB = new THREE.DirectionalLight(0xe4f0ff, lightParams.intensity * 5);
+
+scene.add(dirLightB);
+const helperB = new THREE.DirectionalLightHelper(dirLightB, 0.3);
+scene.add(helperB);
+
 function updateLights() {
   const radA = THREE.MathUtils.degToRad(lightParams.angle);
-  
+  const radB = THREE.MathUtils.degToRad(lightParams.angle + 45);
+
   dirLightA.position.set(Math.cos(radA) * lightParams.radius, lightParams.height, Math.sin(radA) * lightParams.radius);
-  
+  dirLightB.position.set(Math.cos(radB) * lightParams.radius, lightParams.height, Math.sin(radB) * lightParams.radius);
+
   dirLightA.intensity = lightParams.intensity;
-  
+  dirLightB.intensity = lightParams.intensity * 0.8;
+
   dirLightA.lookAt(0, 0, 0);
-  
+  dirLightB.lookAt(0, 0, 0);
+
   helperA.update();
- 
+  helperB.update();
 }
 updateLights();
 
@@ -137,43 +147,7 @@ const lightFolder = gui.addFolder('Dual Directional Light');
 lightFolder.add(lightParams, 'angle', 0, 360).onChange(updateLights);
 lightFolder.add(lightParams, 'radius', 1, 10).onChange(updateLights);
 lightFolder.add(lightParams, 'height', -5, 10).onChange(updateLights);
-lightFolder.add(lightParams, 'intensity', 0, 20, 0.01).onChange(updateLights);
-
-// areaLight
-RectAreaLightUniformsLib.init(); // Important
-
-// Create a pivot
-const lightPivot = new THREE.Object3D();
-scene.add(lightPivot);
-
-// Create the area light
-const areaLight = new THREE.RectAreaLight(0xffffff, 5, 2, 2);
-areaLight.position.set(0, 2, 5); // Place light in front of model
-areaLight.lookAt(0, 0, 0);
-lightPivot.add(areaLight); // Attach light to pivot
-
-// Optionally add helper
-const areaHelper = new RectAreaLightHelper(areaLight);
-areaLight.add(areaHelper);
-
-//GUI areaLight
-const lightControl = {
-  rotateX: 0,
-  rotateY: 0,
-  rotateZ: 0,
-};
-
-const areaLightFolder = gui.addFolder('Area Light');
-
-areaLightFolder.add(lightControl, 'rotateX', -Math.PI, Math.PI).onChange(() => {
-  lightPivot.rotation.x = lightControl.rotateX;
-});
-areaLightFolder.add(lightControl, 'rotateY', -Math.PI, Math.PI).onChange(() => {
-  lightPivot.rotation.y = lightControl.rotateY;
-});
-areaLightFolder.add(lightControl, 'rotateZ', -Math.PI, Math.PI).onChange(() => {
-  lightPivot.rotation.z = lightControl.rotateZ;
-});
+lightFolder.add(lightParams, 'intensity', 0, 5, 0.01).onChange(updateLights);
 
 // Ambient Light
 const ambientLight = new THREE.AmbientLight(0xffffff, 0.5);
