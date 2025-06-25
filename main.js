@@ -210,28 +210,6 @@ loader.load('model.glb', (gltf) => {
     }
   });
   
-  // Assuming you have loaded your GLTF/GLB model already:
-gltf.scene.traverse((child) => {
-  if (child.isMesh && child.name === "MEMBRANE") {
-    // Create a RectAreaLight
-    const width = 1.5;
-    const height = 1;
-    const intensity = 5;
-    const color = 0xffffff;
-
-    const areaLight = new THREE.RectAreaLight(color, intensity, width, height);
-    areaLight.position.copy(child.position);
-    areaLight.rotation.copy(child.rotation); // Optional, depends on how you want the light angled
-
-    // Add the light to the scene
-    scene.add(areaLight);
-
-    // Optional helper
-    const helper = new RectAreaLightHelper(areaLight);
-    areaLight.add(helper);
-  }
-});
-
   scene.add(gltf.scene);
   
   // Setup animation
