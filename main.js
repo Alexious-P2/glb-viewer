@@ -197,18 +197,19 @@ const geometry = new THREE.PlaneGeometry(20, 20);
 let mixer;
 let animationAction;
 let clipDuration = 0;
+const actions = {};
+const animParams = { clip: '' };
 
 // ---------- LOAD GLB & ANIMATIONS ----------
-// Create GLTFLoader with DRACO
 const dracoLoader = new DRACOLoader();
 dracoLoader.setDecoderPath('https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/libs/draco/');
 
 const loader = new GLTFLoader();
 loader.setDRACOLoader(dracoLoader);
+
 loader.load('model.glb', (gltf) => {
   scene.add(gltf.scene);
 
-  // Shadows for every mesh
   gltf.scene.traverse((n) => {
     if (n.isMesh) {
       n.castShadow = true;
@@ -216,66 +217,57 @@ loader.load('model.glb', (gltf) => {
     }
   });
 
-  /* -------- ANIMATION SETUP -------- */
   mixer = new THREE.AnimationMixer(gltf.scene);
 
-  // Collect clips -> a map { name: THREE.AnimationAction }
-  const actions = {};
   gltf.animations.forEach((clip) => {
     actions[clip.name] = mixer.clipAction(clip);
   });
 
-  /* ---------- GUI to pick a clip ---------- */
-  const animFolder = gui.addFolder('Animations');
-  const animParams = { clip: Object.keys(actions)[0] || '' };
+  const names = Object.keys(actions);
+  animParams.clip = names[0] || '';
 
-  animFolder
-    .add(animParams, 'clip', Object.keys(actions))
+  // GUI for animation selection
+  const animFolder = gui.addFolder('Animations');
+  animFolder.add(animParams, 'clip', names)
     .name('Active Clip')
     .onChange((name) => {
       playClip(name);
     });
-
   animFolder.open();
 
-  /* ---------- Play first clip by default ---------- */
   function playClip(name) {
-  if (!name) return;
+    if (!mixer || !actions[name]) return;
 
-  // Stop previous
-  mixer.stopAllAction();
+    mixer.stopAllAction();
 
-  // Setup current
-  animationAction = actions[name];
-  animationAction.reset().play();
-  animationAction.paused = true;
+    animationAction = actions[name];
+    animationAction.reset();
+    animationAction.paused = true;
+    animationAction.enabled = true;
+    animationAction.setEffectiveWeight(1);
+    animationAction.play();
 
-  // 🟢 Ensure full influence
-  animationAction.enabled = true;
-  animationAction.setEffectiveWeight(1);
+    clipDuration = animationAction.getClip().duration;
+    const totalFrames = Math.ceil(clipDuration * 30);
+    scrubber.max = totalFrames;
+    scrubber.value = 1;
 
-  // Update scrubber range
-  clipDuration = animationAction.getClip().duration;
-  const totalFrames = Math.ceil(clipDuration * 30);
-  scrubber.max = totalFrames;
-  scrubber.value = 1;
+    mixer.setTime(0);
+    mixer.update(0.001); // <- ensures update happens
+    frameLabel.innerText = `Frame: 1`;
+  }
 
-  mixer.setTime(0);
-  mixer.update(0); // 🟢 ensure pose updates
-  frameLabel.innerText = 'Frame: 1';
-}
+  // Start with the first clip
+  if (animParams.clip) playClip(animParams.clip);
+}, undefined, (err) => {
+  console.error('GLB Load Error:', err);
+});
 
-  // start initial clip
-  playClip(animParams.clip);
-}, undefined, (err) => console.error(err));
-
-
-// Create scrubber via JavaScript
+// Create scrubber
 const scrubber = document.createElement('input');
 scrubber.type = 'range';
 scrubber.min = 1;
-//scrubber.max = 150;
-scrubber.value = 35;
+scrubber.value = 1;
 scrubber.style.position = 'absolute';
 scrubber.style.top = '10px';
 scrubber.style.left = '10px';
@@ -283,7 +275,7 @@ scrubber.style.zIndex = 100;
 scrubber.style.width = '300px';
 document.body.appendChild(scrubber);
 
-// Frame display
+// Frame label
 const frameLabel = document.createElement('div');
 frameLabel.style.position = 'absolute';
 frameLabel.style.top = '40px';
@@ -294,16 +286,17 @@ frameLabel.style.fontFamily = 'monospace';
 frameLabel.innerText = 'Frame: 1';
 document.body.appendChild(frameLabel);
 
-// Listen for scrubber input
+// Scrub logic
 scrubber.addEventListener('input', (e) => {
   const frame = parseInt(e.target.value);
-  const seconds = frame / 30; // assuming 30fps
+  const seconds = frame / 30;
   if (mixer && animationAction) {
     mixer.setTime(seconds);
-    mixer.update(0); // ✅ force refresh even if paused
+    mixer.update(0.001);
   }
   frameLabel.innerText = `Frame: ${frame}`;
 });
+
 
 
 // Create ReflectorForSSRPass instance
