@@ -16,6 +16,7 @@ import { RectAreaLightHelper } from 'three/examples/jsm/helpers/RectAreaLightHel
 import { RectAreaLightUniformsLib } from 'three/examples/jsm/lights/RectAreaLightUniformsLib.js';
 //import { MeshReflectorMaterial } from 'https://unpkg.com/three@0.155.0/examples/jsm/objects/MeshReflectorMaterial.js';
 //import { EffectComposer, RenderPass, EffectPass, SSRPass} from 'https://cdn.jsdelivr.net/npm/postprocessing@6.30.2/+esm';
+import { DRACOLoader } from 'three/examples/jsm/loaders/DRACOLoader.js';
 
 // Scene
 //const scene = new THREE.Scene();
@@ -198,7 +199,12 @@ let animationAction;
 let clipDuration = 0;
 
 // ---------- LOAD GLB & ANIMATIONS ----------
+// Create GLTFLoader with DRACO
+const dracoLoader = new DRACOLoader();
+dracoLoader.setDecoderPath('https://cdn.jsdelivr.net/npm/three@0.160.0/examples/js/libs/draco/');
+
 const loader = new GLTFLoader();
+loader.setDRACOLoader(dracoLoader);
 loader.load('model.glb', (gltf) => {
   scene.add(gltf.scene);
 
