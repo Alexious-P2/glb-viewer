@@ -294,6 +294,7 @@ scrubber.addEventListener('input', (e) => {
   const seconds = frame / 30; // assuming 30fps
   if (mixer && animationAction) {
     mixer.setTime(seconds);
+    mixer.update(0); // ✅ force refresh even if paused
   }
   frameLabel.innerText = `Frame: ${frame}`;
 });
