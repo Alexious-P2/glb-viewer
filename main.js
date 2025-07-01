@@ -240,24 +240,30 @@ loader.load('model.glb', (gltf) => {
 
   /* ---------- Play first clip by default ---------- */
   function playClip(name) {
-    if (!name) return;
+  if (!name) return;
 
-    // Stop any previous action
-    mixer.stopAllAction();
+  // Stop previous
+  mixer.stopAllAction();
 
-    // Play the chosen one *paused* so we can scrub
-    animationAction = actions[name];
-    animationAction.reset().play();
-    animationAction.paused = true;
+  // Setup current
+  animationAction = actions[name];
+  animationAction.reset().play();
+  animationAction.paused = true;
 
-    // Update scrubber range to this clip’s length
-    clipDuration = animationAction.getClip().duration; // seconds
-    const totalFrames = Math.ceil(clipDuration * 30);
-    scrubber.max = totalFrames;
-    scrubber.value = 1;
-    mixer.setTime(0);
-    frameLabel.innerText = 'Frame: 1';
-  }
+  // 🟢 Ensure full influence
+  animationAction.enabled = true;
+  animationAction.setEffectiveWeight(1);
+
+  // Update scrubber range
+  clipDuration = animationAction.getClip().duration;
+  const totalFrames = Math.ceil(clipDuration * 30);
+  scrubber.max = totalFrames;
+  scrubber.value = 1;
+
+  mixer.setTime(0);
+  mixer.update(0); // 🟢 ensure pose updates
+  frameLabel.innerText = 'Frame: 1';
+}
 
   // start initial clip
   playClip(animParams.clip);
