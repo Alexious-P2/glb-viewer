@@ -201,7 +201,7 @@ let clipDuration = 0;
 // ---------- LOAD GLB & ANIMATIONS ----------
 // Create GLTFLoader with DRACO
 const dracoLoader = new DRACOLoader();
-dracoLoader.setDecoderPath('https://cdn.jsdelivr.net/npm/three@0.160.0/examples/js/libs/draco/');
+dracoLoader.setDecoderPath('https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/libs/draco/');
 
 const loader = new GLTFLoader();
 loader.setDRACOLoader(dracoLoader);
