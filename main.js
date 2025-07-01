@@ -197,44 +197,72 @@ let mixer;
 let animationAction;
 let clipDuration = 0;
 
-// Load GLB model with shadow
+// ---------- LOAD GLB & ANIMATIONS ----------
 const loader = new GLTFLoader();
 loader.load('model.glb', (gltf) => {
-  console.log('Model loaded:', gltf);  // ✅ Check this logs something
+  scene.add(gltf.scene);
 
-  // Enable shadows for all meshes in the model
-  gltf.scene.traverse((node) => {
-    if (node.isMesh) {
-      node.castShadow = true;     // Mesh will cast shadows
-      node.receiveShadow = true;  // Optional: receives shadows if needed
+  // Shadows for every mesh
+  gltf.scene.traverse((n) => {
+    if (n.isMesh) {
+      n.castShadow = true;
+      n.receiveShadow = true;
     }
   });
-  
-  scene.add(gltf.scene);
-  
-  // Setup animation
+
+  /* -------- ANIMATION SETUP -------- */
   mixer = new THREE.AnimationMixer(gltf.scene);
-  const clip = THREE.AnimationClip.findByName(gltf.animations, 'Animation');
-  animationAction = mixer.clipAction(clip);
-  animationAction.play();
-  mixer.setTime(35 / 30); // Set to frame 35 (at 30fps)
-  frameLabel.innerText = 'Frame: 35';
 
-  // Determine clip duration in frames and update scrubber max accordingly
-  clipDuration = clip.duration; // in seconds
-  const totalFrames = Math.min(Math.floor(clipDuration * 30), 150); // clamp to 150 frames
-  scrubber.max = totalFrames;
-}, undefined, (error) => {
-  console.error('GLB Load Error:', error);
-});
+  // Collect clips -> a map { name: THREE.AnimationAction }
+  const actions = {};
+  gltf.animations.forEach((clip) => {
+    actions[clip.name] = mixer.clipAction(clip);
+  });
 
+  /* ---------- GUI to pick a clip ---------- */
+  const animFolder = gui.addFolder('Animations');
+  const animParams = { clip: Object.keys(actions)[0] || '' };
+
+  animFolder
+    .add(animParams, 'clip', Object.keys(actions))
+    .name('Active Clip')
+    .onChange((name) => {
+      playClip(name);
+    });
+
+  animFolder.open();
+
+  /* ---------- Play first clip by default ---------- */
+  function playClip(name) {
+    if (!name) return;
+
+    // Stop any previous action
+    mixer.stopAllAction();
+
+    // Play the chosen one *paused* so we can scrub
+    animationAction = actions[name];
+    animationAction.reset().play();
+    animationAction.paused = true;
+
+    // Update scrubber range to this clip’s length
+    clipDuration = animationAction.getClip().duration; // seconds
+    const totalFrames = Math.ceil(clipDuration * 30);
+    scrubber.max = totalFrames;
+    scrubber.value = 1;
+    mixer.setTime(0);
+    frameLabel.innerText = 'Frame: 1';
+  }
+
+  // start initial clip
+  playClip(animParams.clip);
+}, undefined, (err) => console.error(err));
 
 
 // Create scrubber via JavaScript
 const scrubber = document.createElement('input');
 scrubber.type = 'range';
 scrubber.min = 1;
-scrubber.max = 150;
+//scrubber.max = 150;
 scrubber.value = 35;
 scrubber.style.position = 'absolute';
 scrubber.style.top = '10px';
