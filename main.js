@@ -285,10 +285,11 @@ scrubber.addEventListener('input', (e) => {
   const frame = parseInt(e.target.value);
   const seconds = frame / 30;
 
-  if (animationAction) {
-    animationAction.time = seconds;
-    animationAction._updateTime(0);
-    mixer._update(0);
+  if (mixer && animationAction) {
+    animationAction.paused = false;        // temporarily unpause
+    animationAction.time = seconds;        // set the time directly
+    mixer.update(0);                       // force refresh the pose
+    animationAction.paused = true;         // pause again
   }
 
   frameLabel.innerText = `Frame: ${frame}`;
