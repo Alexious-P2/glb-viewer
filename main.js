@@ -284,10 +284,13 @@ document.body.appendChild(frameLabel);
 scrubber.addEventListener('input', (e) => {
   const frame = parseInt(e.target.value);
   const seconds = frame / 30;
-  if (mixer && animationAction) {
-    mixer.setTime(seconds);
-    mixer.update(0.001); // force update
+
+  if (animationAction) {
+    animationAction.time = seconds;
+    animationAction._updateTime(0);
+    mixer._update(0);
   }
+
   frameLabel.innerText = `Frame: ${frame}`;
 });
 
