@@ -193,77 +193,72 @@ groundFolder.open();
 // Create ground reflector geometry
 const geometry = new THREE.PlaneGeometry(20, 20);
 
-// Declare mixer and animationAction at top-level scope
-let mixer;
-let animationAction;
-let clipDuration = 0;
+// Animation setup
+let mixer, animationAction;
 const actions = {};
 const animParams = { clip: '' };
+let clipDuration = 0;
 
-// ---------- LOAD GLB & ANIMATIONS ----------
+// DRACO loader
 const dracoLoader = new DRACOLoader();
-dracoLoader.setDecoderPath('https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/libs/draco/');
+dracoLoader.setDecoderPath('https://www.gstatic.com/draco/versioned/decoders/1.5.6/');
 
 const loader = new GLTFLoader();
 loader.setDRACOLoader(dracoLoader);
 
+// Load GLB
 loader.load('model.glb', (gltf) => {
   scene.add(gltf.scene);
 
-  gltf.scene.traverse((n) => {
-    if (n.isMesh) {
-      n.castShadow = true;
-      n.receiveShadow = true;
+  // Enable shadows
+  gltf.scene.traverse((child) => {
+    if (child.isMesh) {
+      child.castShadow = true;
+      child.receiveShadow = true;
     }
   });
 
+  // Mixer and clips
   mixer = new THREE.AnimationMixer(gltf.scene);
-
   gltf.animations.forEach((clip) => {
     actions[clip.name] = mixer.clipAction(clip);
   });
 
+  // Setup GUI
+  const gui = new GUI();
   const names = Object.keys(actions);
-  animParams.clip = names[0] || '';
+  animParams.clip = names[0];
+  const folder = gui.addFolder('Animations');
+  folder.add(animParams, 'clip', names).onChange(playClip).name('Select Clip');
+  folder.open();
 
-  // GUI for animation selection
-  const animFolder = gui.addFolder('Animations');
-  animFolder.add(animParams, 'clip', names)
-    .name('Active Clip')
-    .onChange((name) => {
-      playClip(name);
-    });
-  animFolder.open();
-
-  function playClip(name) {
-    if (!mixer || !actions[name]) return;
-
-    mixer.stopAllAction();
-
-    animationAction = actions[name];
-    animationAction.reset();
-    animationAction.paused = true;
-    animationAction.enabled = true;
-    animationAction.setEffectiveWeight(1);
-    animationAction.play();
-
-    clipDuration = animationAction.getClip().duration;
-    const totalFrames = Math.ceil(clipDuration * 30);
-    scrubber.max = totalFrames;
-    scrubber.value = 1;
-
-    mixer.setTime(0);
-    mixer.update(0.001); // <- ensures update happens
-    frameLabel.innerText = `Frame: 1`;
-  }
-
-  // Start with the first clip
-  if (animParams.clip) playClip(animParams.clip);
+  // Play first
+  playClip(animParams.clip);
 }, undefined, (err) => {
   console.error('GLB Load Error:', err);
 });
 
-// Create scrubber
+// Play selected animation
+function playClip(name) {
+  if (!actions[name]) return;
+
+  mixer.stopAllAction();
+  animationAction = actions[name];
+  animationAction.reset().play();
+  animationAction.paused = true;
+  animationAction.enabled = true;
+  animationAction.setEffectiveWeight(1);
+
+  // Update scrubber
+  clipDuration = animationAction.getClip().duration;
+  const totalFrames = Math.floor(clipDuration * 30);
+  scrubber.max = totalFrames;
+  scrubber.value = 1;
+  mixer.setTime(0);
+  frameLabel.innerText = 'Frame: 1';
+}
+
+// Scrubber input
 const scrubber = document.createElement('input');
 scrubber.type = 'range';
 scrubber.min = 1;
@@ -271,32 +266,30 @@ scrubber.value = 1;
 scrubber.style.position = 'absolute';
 scrubber.style.top = '10px';
 scrubber.style.left = '10px';
-scrubber.style.zIndex = 100;
 scrubber.style.width = '300px';
+scrubber.style.zIndex = 100;
 document.body.appendChild(scrubber);
 
-// Frame label
 const frameLabel = document.createElement('div');
 frameLabel.style.position = 'absolute';
 frameLabel.style.top = '40px';
 frameLabel.style.left = '10px';
-frameLabel.style.zIndex = 100;
 frameLabel.style.color = 'white';
 frameLabel.style.fontFamily = 'monospace';
+frameLabel.style.zIndex = 100;
 frameLabel.innerText = 'Frame: 1';
 document.body.appendChild(frameLabel);
 
-// Scrub logic
+// Scrubbing logic
 scrubber.addEventListener('input', (e) => {
   const frame = parseInt(e.target.value);
   const seconds = frame / 30;
   if (mixer && animationAction) {
     mixer.setTime(seconds);
-    mixer.update(0.001);
+    mixer.update(0.001); // force update
   }
   frameLabel.innerText = `Frame: ${frame}`;
 });
-
 
 
 // Create ReflectorForSSRPass instance
